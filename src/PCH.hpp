@@ -64,6 +64,7 @@
 
 // Utils
 #include "Utility/Types.hpp"
+#include "globaldata.h"
 
 // Macros
 #define _UNUSED(x) (void)(x)

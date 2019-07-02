@@ -1,20 +1,15 @@
 #include "Main.hpp"
 
+void initializeGlobalData();
+
 int main()
 {
-	std::cout << "Hello World!" << std::endl;
+	initializeGlobalData();
 
-	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+	sf::RenderWindow window(sf::VideoMode(globals::windowSize.x, globals::windowSize.y), "deltaXi", sf::Style::Close | sf::Style::Titlebar);
 #ifdef SFML_SYSTEM_WINDOWS
 	__windowsHelper.setIcon(window.getSystemHandle());
 #endif
-
-	sf::CircleShape shape(window.getSize().x/2);
-	shape.setFillColor(sf::Color::White);
-
-	sf::Texture shapeTexture;
-	shapeTexture.loadFromFile("content/sfml.png");
-	shape.setTexture(&shapeTexture);
 
 	sf::Event event;
 
@@ -27,9 +22,14 @@ int main()
 		}
 
 		window.clear();
-		window.draw(shape);
+
 		window.display();
 	}
 
 	return 0;
+}
+
+void initializeGlobalData()
+{
+	globals::windowSize = sf::Vector2i(1400, 800);
 }
