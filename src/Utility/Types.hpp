@@ -10,4 +10,8 @@ typedef std::uint64_t ullong;
 
 typedef std::int64_t llong;
 
+typedef std::vector<std::string> stringvector;
+typedef sf::Vector2f vec2f;
+typedef sf::Vector2i vec2i;
+
 #endif // UTIL_TYPES_HPP

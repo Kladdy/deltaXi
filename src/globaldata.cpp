@@ -3,5 +3,17 @@
 
 namespace globals
 {
-	sf::Vector2i windowSize;
+	// Window
+	std::string windowTitle;
+	vec2i windowSize;
+	int updateRate;
+	WindowStruct mainWindow;
+	vec2i mousePos;
+	int timeSinceUpdate;
+
+	// Simulations
+	state currentState;
+
+    stringvector simNames;
+    std::vector<bool> simIsInitialized;
 }
