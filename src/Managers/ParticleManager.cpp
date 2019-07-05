@@ -70,3 +70,10 @@ void ParticleManager::updateKinematics()
 		particles[i].particle.setPos(particle.getPos() + particles[i].particle.velocity * this->elapsedTime);
 	}
 }
+
+ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gravityVector)
+{
+	this->scene = scene;
+	this->gravityEnabled = enableGravity;
+	this->gravityVector = gravityVector;
+}

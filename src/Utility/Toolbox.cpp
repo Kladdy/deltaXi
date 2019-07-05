@@ -4,5 +4,5 @@
 // Returns the elapsed time since last frame in seconds
 float Toolbox::getElapsedTime()
 {
-	return (float)globals::timeSinceUpdate / 1000000.f;
+	return static_cast<float>(globals::timeSinceUpdate) / 1000000.f;
 }

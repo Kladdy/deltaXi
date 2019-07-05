@@ -1,7 +1,7 @@
 #ifndef PARTICLEMANAGER_H
 #define PARTICLEMANAGER_H
 
-#include "../Objects/Drawables/DrawableParticle.h"
+#include "../Objects/Drawables/ParticleSimulator/DrawableParticle.h"
 
 class ParticleManager
 {
@@ -23,14 +23,7 @@ class ParticleManager
 		void mouseClicked(sf::Mouse::Button buttonPressed);
 		void keyPressed(sf::Keyboard::Key key, bool control, bool alt, bool shift, bool system);
 
-		ParticleManager(std::string scene = "default", bool gravityEnabled = true, vec2f gravityVector = vec2f(0.f, 1000.f));
+		ParticleManager(std::string scene = "default", bool gravityEnabled = true, vec2f gravityVector = vec2f(0.f, 3700.f));
 };
-
-inline ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gravityVector)
-{
-	this->scene = scene;
-	this->gravityEnabled = enableGravity;
-	this->gravityVector = gravityVector;
-}
 
 #endif

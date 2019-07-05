@@ -1,6 +1,7 @@
 #include "Main.hpp"
 #include "WindowController.h"
 #include "PCH.hpp"
+#include "../content/icon/icon256.c"
 
 //Update
 sf::Clock updateClock;
@@ -42,6 +43,9 @@ void initializeGlobalData()
 	#ifdef SFML_SYSTEM_WINDOWS
 		__windowsHelper.setIcon(globals::mainWindow.inst.getSystemHandle());
 	#endif
+
+	globals::mainWindow.inst.setIcon( Icon256.width,  Icon256.height,  Icon256.pixel_data );
+
 	globals::mainWindow.loop = std::bind(mainWindowLoop, &globals::mainWindow.inst);
 	globals::mainWindow.loop();
 
