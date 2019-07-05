@@ -64,7 +64,12 @@
 
 // Utils
 #include "Utility/Types.hpp"
+#include "Utility/Logger.h"
+#include "Utility/VectorTools.h"
+#include "Utility/Toolbox.h"
 #include "globaldata.h"
+#include "SimulationConstants.h"
+
 
 // Macros
 #define _UNUSED(x) (void)(x)
