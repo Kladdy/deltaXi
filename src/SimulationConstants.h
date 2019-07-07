@@ -19,6 +19,7 @@ class SimulationConstants
 
 		// Wall
 		const sf::Color ps_wallColor = sf::Color::White;
+		static const int ps_pixelsFromEdge = 20;
 
 
 };

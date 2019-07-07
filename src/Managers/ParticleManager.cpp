@@ -53,11 +53,23 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 		return;
 	}
 
-	if (key == sf::Keyboard::W)
+	/*if (key == sf::Keyboard::W)
 	{
 		this->wallBuilderVertex = VectorTools::vec2i_to_vec2f(globals::mousePos);
 		Logger::log("Set vertex1 position");
 		return;
+	}*/
+
+	if (key == sf::Keyboard::Up)
+	{
+		if (this->wallRotation < 0.991f)
+			this->rotateWall(this->wallRotation + 0.01f);
+	}
+
+	if (key == sf::Keyboard::Down)
+	{
+		if (this->wallRotation > 0.0009f)
+			this->rotateWall(this->wallRotation - 0.01f);
 	}
 
 	if (key == sf::Keyboard::A && control == true && alt == true && shift == true && system == true)
@@ -106,6 +118,19 @@ inline bool sameSign(float a, float b) {
 bool ParticleManager::hasCollied(float initialDistance, float updatedDistance, float particleRadius)
 {
 	return (std::fabs(initialDistance) < particleRadius || std::fabs(updatedDistance) < particleRadius || !sameSign(initialDistance, updatedDistance));
+}
+
+void ParticleManager::rotateWall(float wallRotation)
+{
+	this->wallRotation = wallRotation;
+	float offset = wallRotation * this->wallSideLength;
+	vec2f tL = this->baseTopLeftCorner;
+	vec2f bR = this-> baseBottomRigthCorner;
+
+	walls[0].updateWall(vec2f(tL.x + offset, tL.y), vec2f(bR.x, tL.y + offset));
+	walls[1].updateWall(vec2f(bR.x, tL.y + offset), vec2f(bR.x - offset, bR.y));
+	walls[2].updateWall(vec2f(bR.x - offset, bR.y), vec2f(tL.x, bR.y - offset));
+	walls[3].updateWall(vec2f(tL.x, bR.y - offset), vec2f(tL.x + offset, tL.y));
 }
 
 void ParticleManager::toggleGravity(bool gravityEnabled)
@@ -183,5 +208,18 @@ ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gr
 	this->gravityEnabled = enableGravity;
 	this->gravityVector = gravityVector;
 
-	this->addRectangleWall(vec2f(620, 20), vec2f(1380, 780), sf::Color::White);
+	vec2f topLeftCorner;
+	vec2f bottomRightCorner;
+	int pixelsFromEdge = SimulationConstants::ps_pixelsFromEdge;
+	int heigth = globals::windowSize.y - 2 * pixelsFromEdge;
+
+	bottomRightCorner.x = globals::windowSize.x - pixelsFromEdge;
+	bottomRightCorner.y = globals::windowSize.y - pixelsFromEdge;
+	topLeftCorner.x = bottomRightCorner.x - heigth;
+	topLeftCorner.y = pixelsFromEdge;
+
+	this->addRectangleWall(topLeftCorner, bottomRightCorner, sf::Color::White);
+	this->wallSideLength = heigth;
+	this->baseTopLeftCorner = topLeftCorner;
+	this->baseBottomRigthCorner = bottomRightCorner;
 }
