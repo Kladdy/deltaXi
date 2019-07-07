@@ -22,6 +22,7 @@ int main()
 
 void initializeSimulations()
 {
+	srand (time(NULL));
 	globals::currentState = globals::state::menu;
 
 	globals::simNames.push_back("Particles");
