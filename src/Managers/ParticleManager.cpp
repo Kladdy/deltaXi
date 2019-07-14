@@ -215,5 +215,6 @@ ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gr
 	this->wallSideLength = heigth;
 	this->baseTopLeftCorner = topLeftCorner;
 	this->baseBottomRigthCorner = bottomRightCorner;
+	this->wallRotation = 0;
 
 }
