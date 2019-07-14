@@ -64,6 +64,13 @@ void MenuButton::setOutlineColor(sf::Color color)
 	this->circleShape.setOutlineColor(color);
 }
 
+void MenuButton::setRadius(float radius)
+{
+	this->buttonRadius = radius;
+	this->circleShape.setRadius(radius);
+	this->circleShape.setOrigin(sf::Vector2f(radius, radius));
+}
+
 MenuButton::MenuButton(std::string name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes, bool isActive) : RoundClickable(enlistedScenes, isActive)
 {
 	this->isActive = isActive;

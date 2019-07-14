@@ -17,6 +17,8 @@ void WindowController::updateWindow()
 			break;
 		}
 
+	if (globals::transitioningInSimulation) menuManager.animateTransitionInSimulation();
+
 	return;
 }
 
@@ -47,13 +49,13 @@ void WindowController::keyPressed(sf::Keyboard::Key key, bool control, bool alt,
 	if (control == true && alt == true && shift == true && system == true)
 		Logger::log("Keyboard error (you are a maniac!)");
 
-	if (key == sf::Keyboard::Escape && globals::currentState > -1)
+	if (key == sf::Keyboard::Escape && globals::currentState > -1 && !globals::transitioningInSimulation)
 	{
-		{
-			globals::currentState = globals::state::menu;
-			Logger::logExtra("State set to menu");
-			return;
-		}
+		globals::transitioningInSimulation = true;
+		menuManager.resetMenu();
+		menuManager.startTransitionInSimulation(MenuManager::TransitionDirection::in);
+		Logger::logExtra("State set to menu");
+		return;
 	}
 
 	if (key == sf::Keyboard::Escape && globals::currentState == -1)

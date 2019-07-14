@@ -48,6 +48,8 @@ void initializeSimulations()
 	globals::simNames.push_back("Particles");
 	globals::simIsInitialized.push_back(false);
 
+	globals::transitioningInSimulation = false;
+
 }
 
 void initializeGlobalData()

@@ -9,15 +9,21 @@ class MenuManager
 private:
 
 public:
+	enum ScrollingDirection { left, right };
+	enum TransitionDirection { in, out };
+
 	void startIntro();
 	void animateIntro();
-	void startScrolling(std::string direction);
+	void startScrolling(ScrollingDirection direction);
 	void animateScrolling();
-	void startTransition();
+	void startTransition(TransitionDirection direction);
 	void animateTransition();
+	void startTransitionInSimulation(TransitionDirection direction);
+	void animateTransitionInSimulation();
 
 	void addMainMenuButton(std::string name);
 	void addSimulations();
+	void resetMenu();
 
 	void update();
 	void mouseClicked(sf::Mouse::Button buttonPressed);

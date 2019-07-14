@@ -16,6 +16,7 @@ namespace globals
     extern vec2i mousePos;
     extern int timeSinceUpdate;
     extern bool windowFocused;
+    extern bool transitioningInSimulation;
 
     // Globals textures
 	extern std::map<std::string, sf::Texture> loadedTextures; // Textures

@@ -38,10 +38,10 @@ namespace
 	// Animations
 	sf::Clock animationClock;
 	// Intro: Button fading using Smooth(er)step by Ken Perlin (https://en.wikipedia.org/wiki/Smoothstep)
-	bool isAnimatingIntro;
-	bool isAnimatingFadeIn;
-	float introAnimationDuration = 2; // Intro duration (in seconds)
-	float introAnimationFadeinDuration = 1; // REAL VALUES: 8 and 5
+	bool isAnimatingIntro = false;
+	bool isAnimatingFadeIn = false;
+	float introAnimationDuration = 8; // Intro duration (in seconds)
+	float introAnimationFadeinDuration = 5; // REAL VALUES: 8 and 5
 	// Flying - Initialized in constructor
 	float lowXLimit;
 	float highXLimit;
@@ -49,21 +49,23 @@ namespace
 	float lowFadeLimit = 0.f;
 	float highFadeLimit = 255.f;
 	// Scrolling animation
-	bool isAnimatingScrolling;
+	bool isAnimatingScrolling = false;
 	float scrollingAnimationDuration = 0.3f; // Scrolling duration (in seconds)
-	enum ScrollingDirection { left, right };
-	ScrollingDirection scrollingDirection;
+	MenuManager::ScrollingDirection scrollingDirection;
 	// Scrolling - Initialized in constructor
 	float lowXRightLimit;
 	float highXRightLimit;
 	float lowXLeftLimit;
 	float highXLeftLimit;
 	// Transition animation
-	bool isAnimatingTransition;
-	float transitionAnimationDuration = 2.f; // Transition duration (in seconds)
-	float delayUntilTransition = 1.f;
+	bool isAnimatingTransition = false;
+	float transitionAnimationDuration = 2; // Transition duration (in seconds)
+	float delayUntilTransition = 1;
+	MenuManager::TransitionDirection transitionDirection;
 	float lowRadiusLimit;
 	float highRadiusLimit;
+	// Transitioning back
+	MenuButton transitionMenuButton;
 
 	float clamp(float x, float lowerlimit, float upperlimit) {
 		if (x < lowerlimit)
@@ -105,17 +107,23 @@ namespace
 		std::string t = std::to_string(timerClock.restart().asMicroseconds());
 		Logger::log(eventJustFinished + " finished in " + t + " us");
 	}
+
+	bool isAnimating()
+	{
+		return (isAnimatingIntro || isAnimatingScrolling || isAnimatingTransition);
+	}
 }
 
 void MenuManager::update()
 {
 	if (isAnimatingIntro) animateIntro();
 	else if (isAnimatingScrolling) animateScrolling();
+	else if (isAnimatingTransition) animateTransition();
 
 	for (int i = 0; i < amountMenuButtons; i++)
 	{
 		std::string key = menuButtonMapKey(i);
-		if (!isAnimatingIntro && !isAnimatingScrolling)
+		if (!isAnimatingIntro && !isAnimatingScrolling && !isAnimatingTransition)
 		{
 			if (menuButtons[key].isHovered())
 				storedSounds["menuButtonHover"].play();
@@ -137,14 +145,14 @@ void MenuManager::mouseClicked(sf::Mouse::Button buttonPressed)
 		for (int i = 0; i < amountMenuButtons; i++)
 		{
 			std::string key = menuButtonMapKey(i);
-			if (!isAnimatingIntro && !isAnimatingScrolling && menuButtons[key].isHeld)
+			if (!isAnimatingIntro && !isAnimatingScrolling && !isAnimatingTransition && menuButtons[key].isHeld)
 			{
 				if (menuButtons[key].index == selectedSimulation)
-					Logger::log("Clicked index " + std::to_string(i));
+					startTransition(TransitionDirection::in);
 				if (menuButtons[key].index > selectedSimulation)
-					startScrolling("right");
+					startScrolling(ScrollingDirection::left);
 				if (menuButtons[key].index < selectedSimulation)
-					startScrolling("left");
+					startScrolling(ScrollingDirection::right);
 
 			}
 
@@ -157,19 +165,19 @@ void MenuManager::mouseClicked(sf::Mouse::Button buttonPressed)
 
 void MenuManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, bool shift, bool system)
 {
-	if (key == sf::Keyboard::Space && amountMenuButtons > 0 && !isAnimatingIntro && !isAnimatingScrolling)
+	if (key == sf::Keyboard::Space && amountMenuButtons > 0 && !isAnimating())
 	{
 		startIntro();
 	}
 
-	if (key == sf::Keyboard::Right && selectedSimulation != amountMenuButtons - 1 && !isAnimatingIntro && !isAnimatingScrolling)
+	if (key == sf::Keyboard::Right && selectedSimulation != amountMenuButtons - 1 && !isAnimating())
 	{
-		startScrolling("right");
+		startScrolling(ScrollingDirection::left);
 	}
 
-	if (key == sf::Keyboard::Left && selectedSimulation != 0 && !isAnimatingIntro && !isAnimatingScrolling)
+	if (key == sf::Keyboard::Left && selectedSimulation != 0 && !isAnimating())
 	{
-		startScrolling("left");
+		startScrolling(ScrollingDirection::right);
 	}
 
 	if (key == sf::Keyboard::A && control == true && alt == true && shift == true && system == true)
@@ -262,12 +270,11 @@ void MenuManager::animateIntro()
 	}
 }
 
-void MenuManager::startScrolling(std::string direction)
+void MenuManager::startScrolling(ScrollingDirection direction)
 {
 	animationClock.restart();
 	isAnimatingScrolling = true;
-	if (direction == "right") scrollingDirection = ScrollingDirection::left;
-	if (direction == "left") scrollingDirection = ScrollingDirection::right;
+	scrollingDirection = direction;
 }
 
 void MenuManager::animateScrolling()
@@ -346,14 +353,134 @@ void MenuManager::animateScrolling()
 	}
 }
 
-void MenuManager::startTransition()
+void MenuManager::startTransition(TransitionDirection direction)
 {
+	isAnimatingTransition = true;
+	animationClock.restart();
+	transitionDirection = direction;
 
 }
 
 void MenuManager::animateTransition()
 {
+	float elapsedTime = animationClock.getElapsedTime().asSeconds();
 
+	int sign = 0;
+	if (transitionDirection == TransitionDirection::in) sign = +1;
+	if (transitionDirection == TransitionDirection::out) sign = -1;
+
+	if ((sign == +1 && elapsedTime < delayUntilTransition) || (sign == -1 && elapsedTime >= transitionAnimationDuration - delayUntilTransition)) // Move adjacent buttons to the side
+	{
+		float transitionFraction = 0.f;
+		if (sign == +1) transitionFraction = smootherStep(0.f, delayUntilTransition, elapsedTime);
+		else if (sign == -1) transitionFraction = smootherStep(transitionAnimationDuration - delayUntilTransition, transitionAnimationDuration, elapsedTime);
+
+		int buttonToMoveLeft = -1;
+		int buttonToMoveRight = -1;
+
+		if (selectedSimulation != 0) buttonToMoveLeft = selectedSimulation - 1;
+		if (selectedSimulation != amountMenuButtons) buttonToMoveRight = selectedSimulation + 1;
+
+		std::string keyLeft = menuButtonMapKey(buttonToMoveLeft);
+		std::string keyRight = menuButtonMapKey(buttonToMoveRight);
+
+		float initialXLeft = 0.f;
+		float initialXRight = 0.f;
+		float finalXLeft = 0.f;
+		float finalXRight = 0.f;
+
+		if (sign == +1)
+		{
+			initialXLeft = highXLeftLimit;
+			initialXRight = highXRightLimit;
+			finalXLeft = lowXLeftLimit;
+			finalXRight = lowXRightLimit;
+		}
+		else if (sign == -1)
+		{
+			initialXLeft = lowXLeftLimit;
+			initialXRight = lowXRightLimit;
+			finalXLeft = highXLeftLimit;
+			finalXRight = highXRightLimit;
+		}
+
+		if (buttonToMoveLeft != -1) // Button to move left
+		{
+			sf::Vector2f posLeft = menuButtons[keyLeft].getPosition();
+			posLeft.x = (finalXLeft - initialXLeft) * transitionFraction + initialXLeft;
+			menuButtons[keyLeft].setPosition(posLeft);
+		}
+
+		if (buttonToMoveRight != -1) // Button to move right
+		{
+			sf::Vector2f posRight = menuButtons[keyRight].getPosition();
+			posRight.x = (finalXRight - initialXRight) * transitionFraction + initialXRight;
+			menuButtons[keyRight].setPosition(posRight);
+		}
+	}
+	else
+	{
+		float zoomFraction = 0.f;
+		if (sign == +1) zoomFraction = smootherStep(delayUntilTransition, transitionAnimationDuration, elapsedTime);
+		else if (sign == -1) zoomFraction = smootherStep(0.f, transitionAnimationDuration - delayUntilTransition, elapsedTime);
+
+		std::string key = menuButtonMapKey(selectedSimulation);
+
+		float radius = 0;
+		if (sign == +1) radius = (highRadiusLimit - lowRadiusLimit) * zoomFraction + lowRadiusLimit;
+		else if (sign == -1) radius = (lowRadiusLimit - highRadiusLimit) * zoomFraction + highRadiusLimit;
+		menuButtons[key].setRadius(radius);
+	}
+
+
+	if (elapsedTime >= transitionAnimationDuration)
+	{
+		isAnimatingTransition = false;
+		if (sign == +1)
+		{
+			globals::currentState = globals::state(selectedSimulation);
+			globals::transitioningInSimulation = true;
+			startTransitionInSimulation(TransitionDirection::out);
+		}
+	}
+}
+
+void MenuManager::startTransitionInSimulation(TransitionDirection direction)
+{
+	transitionMenuButton.setRadius(0);
+	transitionMenuButton.setPosition(middlePoint);
+	isAnimatingTransition = true;
+	animationClock.restart();
+	transitionDirection = direction;
+}
+
+void MenuManager::animateTransitionInSimulation()
+{
+	float elapsedTime = animationClock.getElapsedTime().asSeconds();
+	float zoomDuration = transitionAnimationDuration - delayUntilTransition;
+
+	int sign = 0;
+	if (transitionDirection == TransitionDirection::in) sign = +1;
+	if (transitionDirection == TransitionDirection::out) sign = -1;
+
+	float zoomFraction = smootherStep(0.f, zoomDuration, elapsedTime);
+
+	float radius = 0;
+	if (sign == +1) radius = (highRadiusLimit - 0.f) * zoomFraction + 0.f;
+	else if (sign == -1) radius = (0.f - highRadiusLimit) * zoomFraction + highRadiusLimit;
+	transitionMenuButton.setRadius(radius);
+
+	transitionMenuButton.draw();
+
+	if(elapsedTime >= zoomDuration)
+	{
+		globals::transitioningInSimulation = false;
+		if (sign == +1)
+		{
+			startTransition(TransitionDirection::out);
+			globals::currentState = globals::state::menu;
+		}
+	}
 }
 
 void MenuManager::addMainMenuButton(std::string name)
@@ -361,7 +488,6 @@ void MenuManager::addMainMenuButton(std::string name)
 	std::string key = menuButtonMapKey(amountMenuButtons); // Set current key to the amount of menu buttons (so that particles = 0 etc...)
 	std::string key_sounds = menuButtonSoundMapKey(amountMenuButtons);
 
-	stringvector scenes { "default" };
 	menuButtons[key] = MenuButton(name, menuButtonRadius, menuButtonPointCount, menuButtonFillColor, menuButtonOutlineColor, menuButtonOutlineThickness, menuButtonHoldColor, amountMenuButtons);
 
 	loadedSoundBuffers[key_sounds] = ResourceController::loadMenuButtonSoundBufferFromMemory(amountMenuButtons);
@@ -379,6 +505,14 @@ void MenuManager::addSimulations()
 	addMainMenuButton("Orbits");
 }
 
+void MenuManager::resetMenu()
+{
+	for (auto& [key, value]: menuButtons)
+	{
+		value.setRadius((menuButtonOutlineThickness + 1) * menuButtonRadius);
+	}
+}
+
 MenuManager::MenuManager()
 {
 	loadedSoundBuffers["menuFade"] = ResourceController::loadSoundBufferFromMemory((void*)menuFade_data, menuFade_data_length);
@@ -389,11 +523,11 @@ MenuManager::MenuManager()
 
 	windowSize = globals::windowSize;
 
-	lowXLimit = -1.2f * menuButtonRadius;
-	highXLimit = windowSize.x + 1.2f * menuButtonRadius;
-
 	menuButtonRadius = menuButtonSize * windowSize.y;
 	middlePoint = sf::Vector2f(windowSize.x / 2, windowSize.y / 2);
+
+	lowXLimit = -1.2f * menuButtonRadius;
+	highXLimit = windowSize.x + 1.2f * menuButtonRadius;
 
 	lowXLeftLimit = -2.f * menuButtonRadius;
 	highXLeftLimit = -2.f * menuButtonRadius / 3.f;
@@ -401,10 +535,13 @@ MenuManager::MenuManager()
 	highXRightLimit = windowSize.x + 2.f * menuButtonRadius / 3.f;
 
 	lowRadiusLimit = menuButtonRadius;
-	highRadiusLimit = windowSize.x;
+	highRadiusLimit = 2.f * windowSize.x / 3.f;
 
 	(void)setTimer; // Silence unused function warning
 	(void)getTimer;
+
+	// Add transitioning menu button
+	transitionMenuButton = MenuButton("transition", menuButtonRadius, menuButtonPointCount, menuButtonFillColor, menuButtonHoldColor, menuButtonOutlineThickness, menuButtonHoldColor, -1);
 
 	addSimulations();
 
