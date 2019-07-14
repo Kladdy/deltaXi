@@ -6,11 +6,11 @@ void WindowController::updateWindow()
 	switch (globals::currentState)
 		{
 		case globals::state::menu:
-
+			menuManager.update();
 			break;
 
 		case globals::state::particle:
-			particleManager.updateWindow();
+			particleManager.update();
 			break;
 
 		default:
@@ -27,8 +27,7 @@ void WindowController::mouseClicked(sf::Mouse::Button buttonPressed)
 		switch (globals::currentState)
 		{
 		case globals::state::menu:
-			globals::currentState = globals::state::particle;
-			Logger::logExtra("State set to particles");
+			menuManager.mouseClicked(buttonPressed);
 			break;
 
 		case globals::state::particle:
@@ -57,10 +56,16 @@ void WindowController::keyPressed(sf::Keyboard::Key key, bool control, bool alt,
 		}
 	}
 
+	if (key == sf::Keyboard::Escape && globals::currentState == -1)
+	{
+		WindowController::close();
+		return;
+	}
+
 	switch (globals::currentState)
 		{
 		case globals::state::menu:
-
+			menuManager.keyPressed(key, control, alt, shift, system);
 			break;
 
 		case globals::state::particle:
@@ -73,4 +78,12 @@ void WindowController::keyPressed(sf::Keyboard::Key key, bool control, bool alt,
 
 
 	return;
+}
+
+void WindowController::close()
+{
+	//globals::loadedSoundBuffers.clear();
+
+	Logger::logExtra("QUIT");
+	globals::mainWindow.inst.close();
 }

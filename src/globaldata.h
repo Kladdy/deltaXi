@@ -15,6 +15,10 @@ namespace globals
     extern WindowStruct mainWindow;
     extern vec2i mousePos;
     extern int timeSinceUpdate;
+    extern bool windowFocused;
+
+    // Globals textures
+	extern std::map<std::string, sf::Texture> loadedTextures; // Textures
 
     // Simulations
     enum state

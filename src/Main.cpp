@@ -3,6 +3,23 @@
 #include "PCH.hpp"
 #include "../content/icon/icon256.c"
 
+namespace
+{
+	// Timer clock
+	sf::Clock timerClock;
+
+	void setTimer()
+	{
+		timerClock.restart();
+	}
+
+	void getTimer(std::string eventJustFinished)
+	{
+		std::string t = std::to_string(timerClock.restart().asMicroseconds());
+		Logger::log(eventJustFinished + " finished in " + t + " us");
+	}
+}
+
 //Update
 sf::Clock updateClock;
 sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -14,6 +31,9 @@ void mainWindowLoop(sf::RenderWindow* w);
 
 int main()
 {
+	(void)setTimer; // Silence unused function warning
+	(void)getTimer;
+
 	initializeSimulations();
 	initializeGlobalData();
 
@@ -36,7 +56,6 @@ void initializeGlobalData()
 	globals::windowTitle = "deltaXi";
 	globals::windowSize = sf::Vector2i(1400, 800);
 	globals::updateRate = 60;
-
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
@@ -68,17 +87,16 @@ void mainWindowLoop(sf::RenderWindow* w)
 		if (elapsedTime >= (1000000 / globals::updateRate)) {
 			globals::timeSinceUpdate = elapsedTime;
 			globals::mousePos = sf::Mouse::getPosition(window);
+			globals::windowFocused = window.hasFocus();
 
 			sf::Event event;
 			while (window.pollEvent(event))
 			{
-				if (window.hasFocus()) {
+				if (event.type == sf::Event::Closed) WindowController::close();
+
+				if (globals::windowFocused) {
 					switch (event.type)
 					{
-					case sf::Event::Closed:
-						window.close();
-						break;
-
 					case sf::Event::MouseButtonPressed:
 						windowController.mouseClicked(event.mouseButton.button);
 						break;

@@ -3,6 +3,7 @@
 
 #include "../Objects/Drawables/ParticleSimulator/DrawableParticle.h"
 #include "../Objects/Drawables/ParticleSimulator/Wall.h"
+#include "../Objects/Clickables/RoundClickable.h"
 
 class ParticleManager
 {
@@ -13,6 +14,11 @@ class ParticleManager
 		// Drawables
 		std::vector<DrawableParticle> particles;
 		std::vector<Wall> walls;
+
+		// Clickables
+		std::vector<RoundClickable> roundClickables;
+		RoundClickable circle;
+		sf::CircleShape shape;
 
 		// Physics
 		float elapsedTime;
@@ -36,11 +42,11 @@ class ParticleManager
 		void updateKinematics();
 
 	public:
-		void updateWindow();
+		void update();
 		void mouseClicked(sf::Mouse::Button buttonPressed);
 		void keyPressed(sf::Keyboard::Key key, bool control, bool alt, bool shift, bool system);
 
-		ParticleManager(std::string scene = "default", bool gravityEnabled = false, vec2f gravityVector = vec2f(0.f, 3700.f));
+		ParticleManager(std::string scene = "default", bool gravityEnabled = true, vec2f gravityVector = vec2f(0.f, 3700.f));
 };
 
 #endif

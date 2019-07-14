@@ -69,6 +69,7 @@
 #include "Utility/Toolbox.h"
 #include "globaldata.h"
 #include "SimulationConstants.h"
+#include "ResourceController.hpp"
 
 
 // Macros

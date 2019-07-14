@@ -43,4 +43,9 @@ Thumbs.db
 *.app
 
 # Project specific
-#
+*.ogg
+*.wav
+*.psd
+*.aup
+content/sound/menuFade_data
+content/sound/menuTraverses

@@ -1,7 +1,7 @@
 #include "ParticleManager.h"
 #include "PCH.hpp"
 
-void ParticleManager::updateWindow()
+void ParticleManager::update()
 {
 	this->elapsedTime = Toolbox::getElapsedTime();
 
@@ -52,13 +52,6 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 		this->wallBuilderVertex = vec2f();
 		return;
 	}
-
-	/*if (key == sf::Keyboard::W)
-	{
-		this->wallBuilderVertex = VectorTools::vec2i_to_vec2f(globals::mousePos);
-		Logger::log("Set vertex1 position");
-		return;
-	}*/
 
 	if (key == sf::Keyboard::Up)
 	{
@@ -202,7 +195,7 @@ void ParticleManager::updateKinematics()
 	}
 }
 
-ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gravityVector)
+ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gravityVector) : circle(stringvector())
 {
 	this->scene = scene;
 	this->gravityEnabled = enableGravity;
@@ -222,4 +215,5 @@ ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gr
 	this->wallSideLength = heigth;
 	this->baseTopLeftCorner = topLeftCorner;
 	this->baseBottomRigthCorner = bottomRightCorner;
+
 }

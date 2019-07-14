@@ -7,6 +7,7 @@ class Toolbox
 
 	public:
 		static float getElapsedTime();
+		static bool isHoverable();
 };
 
 #endif

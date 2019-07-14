@@ -10,6 +10,10 @@ namespace globals
 	WindowStruct mainWindow;
 	vec2i mousePos;
 	int timeSinceUpdate;
+	bool windowFocused;
+
+	// Globals textures
+	std::map<std::string, sf::Texture> loadedTextures; // Textures
 
 	// Simulations
 	state currentState;

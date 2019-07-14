@@ -26,12 +26,28 @@ vec2f VectorTools::mirrorHorizontal(vec2f vector)
 	return vec2f(-vector.x, vector.y);
 }
 
-float VectorTools::distancePointToLine(vec2f point, float gradient, float interception){
+float VectorTools::distancePointToLine(vec2f point, float gradient, float interception)
+{
 	float a = -gradient;
 	float b = 1.f;
 	float c = -interception;
 
 	return (a*point.x + b*point.y + c) / VectorTools::vectorLength(vec2f(a, b));
+}
+
+float VectorTools::distancePointToPoint(vec2f point1, vec2f point2)
+{
+	return sqrt(pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2));
+}
+
+float VectorTools::distancePointToPoint(vec2f point1, vec2i point2)
+{
+	return sqrt(pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2));
+}
+
+float VectorTools::distancePointToPoint(vec2i point1, vec2i point2)
+{
+	return sqrt(pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2));
 }
 
 float VectorTools::dotProduct(vec2f vector1, vec2f vector2)
