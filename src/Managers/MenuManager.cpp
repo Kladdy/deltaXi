@@ -1,6 +1,7 @@
 #include "MenuManager.hpp"
 #include "PCH.hpp"
 #include "../Objects/Clickables/Menu/MenuButton.hpp"
+#include "../Animations/MenuButtonIcons/ParticleIconAnimation.hpp"
 //#include "../../content/sound/menuFade.hpp"
 #include "../../content/sound/menuSounds.hpp"
 
@@ -21,6 +22,9 @@ namespace
 	sf::Color menuButtonOutlineColor = sf::Color::White;
 	sf::Color menuButtonHoldColor = sf::Color(0, 72, 123);
 	std::map<std::string, MenuButton> menuButtons; // MenuButtons object
+
+	// Menu button animations
+	ParticleIconAnimation particleIconAnimation;
 
 	// Map prefixes
 	std::string prefix = "menu_"; // Specifies prefix to use for global resources, such as textures, sounds etc.
@@ -130,6 +134,16 @@ void MenuManager::update()
 		}
 
 		menuButtons[key].draw();
+
+		switch (i) // Draw menu button animation
+		{
+			case 0:
+				particleIconAnimation.updateAnimation(menuButtons[key].getPosition());
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	/* for (auto& [key, value] : storedCircleShapes)
@@ -550,6 +564,9 @@ MenuManager::MenuManager()
 		transitionAnimationDuration = 0.5;
 		delayUntilTransition = 0;
 	}
+
+	// Setup menu animations
+	particleIconAnimation = ParticleIconAnimation(4); // Setup particle simulation icon with 3 particles
 
 	addSimulations();
 

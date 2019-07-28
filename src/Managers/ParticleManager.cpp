@@ -113,8 +113,8 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 void ParticleManager::addParticle(vec2f pos, vec2f velocity)
 {
 	stringvector scenes { "default" };
-	sf::Color randColor = sf::Color(rand() % 255, rand() % 255, rand() % 255);
-	DrawableParticle drawableParticle = DrawableParticle(scenes, true, pos, SimulationConstants::ps_ParticleRadius, randColor, 1.f);
+	sf::Color randomColor = globals::colorPalette.getRandomColorInPalette("particles1");
+	DrawableParticle drawableParticle = DrawableParticle(scenes, true, pos, SimulationConstants::ps_ParticleRadius, randomColor, 1.f);
 	if (this->gravityEnabled) drawableParticle.particle.acceleration_offset += this->gravityVector;
 	drawableParticle.particle.setVelocity(velocity);
 	this->particles.push_back(drawableParticle);
