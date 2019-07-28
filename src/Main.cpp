@@ -54,6 +54,9 @@ void initializeSimulations()
 
 void initializeGlobalData()
 {
+	// General
+	globals::developerMode = true;
+
 	// Window
 	globals::windowTitle = "deltaXi";
 	globals::windowSize = sf::Vector2i(1400, 800);

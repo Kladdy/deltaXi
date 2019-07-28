@@ -3,6 +3,9 @@
 
 namespace globals
 {
+	// General
+	bool developerMode;
+
 	// Window
 	std::string windowTitle;
 	vec2i windowSize;

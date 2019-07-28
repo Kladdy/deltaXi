@@ -88,7 +88,7 @@ MenuButton::MenuButton(std::string name, float radius, int pointCount, sf::Color
 	this->circleShape = circleShape;
 
 	this->buttonRadius = (outlineThickness + 1) * radius;
-	this->soundPlayed = false;
+	this->soundPlayed = globals::developerMode; // If in developer mode, dont play translation sound (too noisy)
 	this->isHeld = false;
 
 	this->normalColor = outlineColor;

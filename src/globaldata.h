@@ -4,6 +4,9 @@
 
 namespace globals
 {
+    // General
+	extern bool developerMode;
+
     // Window
     struct WindowStruct {
 	    sf::RenderWindow inst;

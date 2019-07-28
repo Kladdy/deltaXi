@@ -41,7 +41,7 @@ namespace
 	bool isAnimatingIntro = false;
 	bool isAnimatingFadeIn = false;
 	float introAnimationDuration = 8; // Intro duration (in seconds)
-	float introAnimationFadeinDuration = 5; // REAL VALUES: 8 and 5
+	float introAnimationFadeinDuration = 5;
 	// Flying - Initialized in constructor
 	float lowXLimit;
 	float highXLimit;
@@ -542,6 +542,14 @@ MenuManager::MenuManager()
 
 	// Add transitioning menu button
 	transitionMenuButton = MenuButton("transition", menuButtonRadius, menuButtonPointCount, menuButtonFillColor, menuButtonHoldColor, menuButtonOutlineThickness, menuButtonHoldColor, -1);
+
+	if (globals::developerMode) // Developer animation durations to shorter launch
+	{
+		introAnimationDuration = 0.5;
+		introAnimationFadeinDuration = 0;
+		transitionAnimationDuration = 0.5;
+		delayUntilTransition = 0;
+	}
 
 	addSimulations();
 
