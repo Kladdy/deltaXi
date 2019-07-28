@@ -2,10 +2,13 @@
 #ifndef GLOBALDATA_H
 #define GLOBALDATA_H
 
+#include "./Utility/ColorPalette.hpp"
+
 namespace globals
 {
     // General
 	extern bool developerMode;
+    extern ColorPalette colorPalette;
 
     // Window
     struct WindowStruct {

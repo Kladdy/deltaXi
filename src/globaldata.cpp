@@ -5,6 +5,7 @@ namespace globals
 {
 	// General
 	bool developerMode;
+	ColorPalette colorPalette;
 
 	// Window
 	std::string windowTitle;

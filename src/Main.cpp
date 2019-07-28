@@ -40,6 +40,15 @@ int main()
 	return 0;
 }
 
+void colorPaletteSetup()
+{
+	globals::colorPalette = ColorPalette();
+
+	globals::colorPalette.addColorPalette("RGB", std::vector<sf::Color>{sf::Color::Red, sf::Color::Green, sf::Color::Blue});
+	globals::colorPalette.addColorPalette("particles1", std::vector<sf::Color>{sf::Color(70, 188, 222), sf::Color(82, 210, 115), sf::Color(233, 79, 100), sf::Color(229, 114, 84), sf::Color(229, 196, 84)});
+
+}
+
 void initializeSimulations()
 {
 	srand (time(NULL));
@@ -54,8 +63,10 @@ void initializeSimulations()
 
 void initializeGlobalData()
 {
+	colorPaletteSetup();
+
 	// General
-	globals::developerMode = true;
+	globals::developerMode = false;
 
 	// Window
 	globals::windowTitle = "deltaXi";
