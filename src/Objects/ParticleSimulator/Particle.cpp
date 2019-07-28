@@ -21,6 +21,11 @@ void Particle::setVelocity(vec2f velocity)
 	this->velocity = velocity;
 }
 
+float Particle::getMass()
+{
+	return pow(this->radius, 2);
+}
+
 Particle::Particle(vec2f pos, int radius, sf::Color color, float elasticityModule)
 {
 	this->pos = pos;

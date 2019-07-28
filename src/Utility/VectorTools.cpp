@@ -65,3 +65,24 @@ float VectorTools::vectorLength(vec2f vector)
 {
 	return sqrt(pow(vector.x, 2) + pow(vector.y, 2));
 }
+
+float VectorTools::vectorLength(vec2i vector)
+{
+	return sqrt(pow(vector.x, 2) + pow(vector.y, 2));
+}
+
+float VectorTools::vectorLengthSquared(vec2f vector)
+{
+	return pow(vector.x, 2) + pow(vector.y, 2);
+}
+
+float VectorTools::vectorLengthSquared(vec2i vector)
+{
+	return pow(vector.x, 2) + pow(vector.y, 2);
+}
+
+sf::Vector2f VectorTools::normalizeVector(sf::Vector2f vector)
+{
+	float length = VectorTools::vectorLength(vector);
+	return vector / length;
+}

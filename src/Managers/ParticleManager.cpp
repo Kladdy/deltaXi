@@ -1,9 +1,26 @@
 #include "ParticleManager.h"
 #include "PCH.hpp"
+#include "../Animations/Smootherstep.hpp"
+
+namespace
+{
+	// Wall animation
+	Smootherstep wallAnimationSmootherstep;
+	float wallAnimationDuration = 1.f;
+	float currentWallScale = 1.f;
+	float wallAnimationScale = 1.f;
+	bool isAnimatingWallScaling = false;
+	sf::Vector2f particleBoxCenter;
+
+}
+
 
 void ParticleManager::update()
 {
 	this->elapsedTime = Toolbox::getElapsedTime();
+
+	if (isAnimatingWallScaling)
+		scaleWall();
 
 	updateKinematics();
 
@@ -53,16 +70,38 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 		return;
 	}
 
-	if (key == sf::Keyboard::Up)
+	if (key == sf::Keyboard::Num1 || key == sf::Keyboard::Num2 || key == sf::Keyboard::Num3 || key == sf::Keyboard::Num4)
 	{
-		if (this->wallRotation < 0.991f)
-			this->rotateWall(this->wallRotation + 0.01f);
-	}
+		float scale = 0.f;
+		switch (key){
+			case sf::Keyboard::Num1:
+				scale = 1 / 1.f;
+				break;
 
-	if (key == sf::Keyboard::Down)
-	{
-		if (this->wallRotation > 0.0009f)
-			this->rotateWall(this->wallRotation - 0.01f);
+			case sf::Keyboard::Num2:
+				scale = 1 / 2.f;
+				break;
+
+			case sf::Keyboard::Num3:
+				scale = 1 / 3.f;
+				break;
+
+			case sf::Keyboard::Num4:
+				scale = 1 / 4.f;
+				break;
+
+			default:
+				scale = currentWallScale;
+		}
+
+		if (scale != currentWallScale && !isAnimatingWallScaling)
+		{
+			wallAnimationSmootherstep = Smootherstep(wallAnimationDuration, currentWallScale, scale);
+			wallAnimationSmootherstep.retartAnimation();
+			isAnimatingWallScaling = true;
+			wallAnimationScale = scale;
+		}
+
 	}
 
 	if (key == sf::Keyboard::A && control == true && alt == true && shift == true && system == true)
@@ -74,7 +113,8 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 void ParticleManager::addParticle(vec2f pos, vec2f velocity)
 {
 	stringvector scenes { "default" };
-	DrawableParticle drawableParticle = DrawableParticle(scenes, true, pos, SimulationConstants::ps_ParticleRadius, SimulationConstants().ps_ParticleColor, 1.f);
+	sf::Color randColor = sf::Color(rand() % 255, rand() % 255, rand() % 255);
+	DrawableParticle drawableParticle = DrawableParticle(scenes, true, pos, SimulationConstants::ps_ParticleRadius, randColor, 1.f);
 	if (this->gravityEnabled) drawableParticle.particle.acceleration_offset += this->gravityVector;
 	drawableParticle.particle.setVelocity(velocity);
 	this->particles.push_back(drawableParticle);
@@ -113,17 +153,22 @@ bool ParticleManager::hasCollied(float initialDistance, float updatedDistance, f
 	return (std::fabs(initialDistance) < particleRadius || std::fabs(updatedDistance) < particleRadius || !sameSign(initialDistance, updatedDistance));
 }
 
-void ParticleManager::rotateWall(float wallRotation)
+void ParticleManager::scaleWall()
 {
-	this->wallRotation = wallRotation;
-	float offset = wallRotation * this->wallSideLength;
-	vec2f tL = this->baseTopLeftCorner;
-	vec2f bR = this-> baseBottomRigthCorner;
+	auto [ scale, animationIsComplete ] = wallAnimationSmootherstep.getAnimationState();
+	int vertexOffset = std::round(scale * this->wallSideLength / 2);
+	float x = particleBoxCenter.x;
+	float y = particleBoxCenter.y;
 
-	walls[0].updateWall(vec2f(tL.x + offset, tL.y), vec2f(bR.x, tL.y + offset));
-	walls[1].updateWall(vec2f(bR.x, tL.y + offset), vec2f(bR.x - offset, bR.y));
-	walls[2].updateWall(vec2f(bR.x - offset, bR.y), vec2f(tL.x, bR.y - offset));
-	walls[3].updateWall(vec2f(tL.x, bR.y - offset), vec2f(tL.x + offset, tL.y));
+	walls[0].updateWall(vec2f(x - vertexOffset, y - vertexOffset), vec2f(x + vertexOffset, y - vertexOffset));
+	walls[1].updateWall(vec2f(x + vertexOffset, y - vertexOffset), vec2f(x + vertexOffset, y + vertexOffset));
+	walls[2].updateWall(vec2f(x + vertexOffset, y + vertexOffset), vec2f(x - vertexOffset, y + vertexOffset));
+	walls[3].updateWall(vec2f(x - vertexOffset, y + vertexOffset), vec2f(x - vertexOffset, y - vertexOffset));
+
+	if (animationIsComplete){
+		isAnimatingWallScaling = false;
+		currentWallScale = wallAnimationScale;
+	}
 }
 
 void ParticleManager::toggleGravity(bool gravityEnabled)
@@ -138,9 +183,58 @@ void ParticleManager::toggleGravity(bool gravityEnabled)
 	}
 }
 
+std::tuple<sf::Vector2f, sf::Vector2f> ParticleManager::ExtrapolatePositionsUponCollision(sf::Vector2f pos1, sf::Vector2f pos2, sf::Vector2f v1, sf::Vector2f v2, float totalRadius)
+{
+	const float timeResolution = Toolbox::getElapsedTime() / SimulationConstants::ps_extrapolationPrecision;
+	sf::Vector2f pos1_coll;
+	sf::Vector2f pos2_coll;
+
+	for (int i = 0; i < SimulationConstants::ps_extrapolationPrecision; i++)
+	{
+		pos1_coll = pos1 - v1 * (timeResolution * i);
+		pos2_coll = pos2 - v2 * (timeResolution * i);
+		float distance = VectorTools::distancePointToPoint(pos1_coll, pos2_coll);
+		if (distance >= totalRadius)
+			return std::make_tuple(pos1_coll, pos2_coll);
+
+	}
+
+	// Collision point not found, taking default as previous positions
+	return std::make_tuple(pos1, pos2);
+}
+
+std::tuple<sf::Vector2f, sf::Vector2f, sf::Vector2f, sf::Vector2f> ParticleManager::ParticleOnParticleCollision(Particle p1, Particle p2)
+{
+	// https://en.wikipedia.org/wiki/Elastic_collision#Two-dimensional_collision_with_two_moving_objects
+
+	// The positions should be the respective positions at the collision point
+	sf::Vector2f pos1 = p1.getPos();
+	sf::Vector2f pos2 = p2.getPos();
+
+	sf::Vector2f v1 = p1.getVelocity();
+	sf::Vector2f v2 = p2.getVelocity();
+
+	auto [ pos1_coll, pos2_coll ]  = this->ExtrapolatePositionsUponCollision(pos1, pos2, v1, v2, p1.radius + p1.radius);
+
+	float m1 = p1.getMass();
+	float m2 = p2.getMass();
+
+	sf::Vector2f posDifference = pos1_coll - pos2_coll;
+
+	float massFactor = -2.f / (m1 + m2);
+	float dotProductFactor = VectorTools::dotProduct(v1 - v2, posDifference) / VectorTools::vectorLengthSquared(posDifference);
+
+	sf::Vector2f v1_upd = v1 + (m2 * massFactor) * (dotProductFactor * posDifference);
+	sf::Vector2f v2_upd = v2 + (m1 * massFactor) * (dotProductFactor * -1 * posDifference);
+
+	return std::make_tuple(pos1_coll, pos2_coll, v1_upd, v2_upd);
+}
+
 void ParticleManager::updateKinematics()
 {
-	for (size_t i = 0; i < this->particles.size(); i++)
+	size_t particlesSize = this->particles.size();
+
+	for (size_t i = 0; i < particlesSize; i++)
 	{
 		Particle particle = particles[i].particle;
 
@@ -188,10 +282,39 @@ void ParticleManager::updateKinematics()
 				updatedPos = particle.getPos() + updatedVelocity * e1 + mirroredVelocity * e2;
 				updatedVelocity = particle.elasticityModule * mirroredVelocity;
 			}
+
+			particles[i].particle.setPos(updatedPos);
+			particles[i].particle.setVelocity(updatedVelocity);
 		}
 
-		particles[i].particle.setPos(updatedPos);
-		particles[i].particle.setVelocity(updatedVelocity);
+		for (size_t j = i + 1; j < particlesSize; j++)
+		{
+			Particle p1 = particles[i].particle;
+			Particle p2 = particles[j].particle;
+
+			if (VectorTools::distancePointToPoint(p1.getPos(), p2.getPos()) <= p1.radius + p2.radius)
+			{
+				auto [ pos1_upd, pos2_upd, v1_upd, v2_upd ]  = this->ParticleOnParticleCollision(p1, p2);
+
+				particles[i].particle.setPos(pos1_upd);
+				particles[j].particle.setPos(pos2_upd);
+
+				particles[i].particle.setVelocity(v1_upd);
+				particles[j].particle.setVelocity(v2_upd);
+
+				float distanceExceeded = p1.radius + p2.radius - VectorTools::distancePointToPoint(pos1_upd, pos2_upd) ;
+
+				if (distanceExceeded > 0.f) // Resolve particles sticking together
+				{
+					sf::Vector2f deltaPositionVector = VectorTools::normalizeVector(pos2_upd - pos1_upd);
+					sf::Vector2f correctionVector = deltaPositionVector * (distanceExceeded / 2);
+
+					particles[i].particle.setPos(pos1_upd - correctionVector);
+					particles[j].particle.setPos(pos2_upd + correctionVector);
+				}
+			}
+		}
+
 	}
 }
 
@@ -217,4 +340,5 @@ ParticleManager::ParticleManager(std::string scene, bool enableGravity, vec2f gr
 	this->baseBottomRigthCorner = bottomRightCorner;
 	this->wallRotation = 0;
 
+	particleBoxCenter = topLeftCorner + (bottomRightCorner - topLeftCorner) / 2.f;
 }

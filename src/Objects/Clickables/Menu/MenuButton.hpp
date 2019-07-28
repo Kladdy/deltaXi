@@ -13,6 +13,7 @@ class MenuButton : public RoundClickable
 	public:
 		int index;
 		float buttonRadius;
+		float outlineThicknessFraction;
 		bool soundPlayed;
 		bool isHeld;
 		sf::Color normalColor;

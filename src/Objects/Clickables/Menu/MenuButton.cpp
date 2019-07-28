@@ -69,6 +69,7 @@ void MenuButton::setRadius(float radius)
 	this->buttonRadius = radius;
 	this->circleShape.setRadius(radius);
 	this->circleShape.setOrigin(sf::Vector2f(radius, radius));
+	this->circleShape.setOutlineThickness(this->outlineThicknessFraction * radius);
 }
 
 MenuButton::MenuButton(std::string name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes, bool isActive) : RoundClickable(enlistedScenes, isActive)
@@ -88,6 +89,7 @@ MenuButton::MenuButton(std::string name, float radius, int pointCount, sf::Color
 	this->circleShape = circleShape;
 
 	this->buttonRadius = (outlineThickness + 1) * radius;
+	this->outlineThicknessFraction = outlineThickness;
 	this->soundPlayed = globals::developerMode; // If in developer mode, dont play translation sound (too noisy)
 	this->isHeld = false;
 

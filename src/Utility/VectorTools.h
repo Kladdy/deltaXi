@@ -22,7 +22,9 @@ class VectorTools
 		static float dotProductNormalize(vec2f vector, vec2f normalize);
 		static float vectorLength(vec2f vector);
 		static float vectorLength(vec2i vector);
-
+		static float vectorLengthSquared(vec2f vector);
+		static float vectorLengthSquared(vec2i vector);
+		static vec2f normalizeVector(vec2f vector);
 };
 
 #endif
