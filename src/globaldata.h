@@ -27,6 +27,9 @@ namespace globals
     // Globals textures
 	extern std::map<std::string, sf::Texture> loadedTextures; // Textures
 
+    // Globals fonts
+	extern std::map<std::string, sf::Font> loadedFonts; // Fonts
+
     // Simulations
     enum state
 	{

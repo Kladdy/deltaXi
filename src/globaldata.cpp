@@ -20,6 +20,9 @@ namespace globals
 	// Globals textures
 	std::map<std::string, sf::Texture> loadedTextures; // Textures
 
+	// Globals fonts
+	std::map<std::string, sf::Font> loadedFonts; // Fonts
+
 	// Simulations
 	state currentState;
 

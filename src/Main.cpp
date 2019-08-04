@@ -2,6 +2,7 @@
 #include "WindowController.h"
 #include "PCH.hpp"
 #include "../content/icon/icon256.c"
+#include "../content/fonts/RomanSerif_ttf.hpp"
 
 namespace
 {
@@ -49,6 +50,11 @@ void colorPaletteSetup()
 
 }
 
+void loadFonts()
+{
+	globals::loadedFonts["RomanSerif"] = ResourceController::loadFontFromMemory((void*)RomanSerif_ttf, RomanSerif_ttf_length);
+}
+
 void initializeSimulations()
 {
 	srand (time(NULL));
@@ -63,7 +69,11 @@ void initializeSimulations()
 
 void initializeGlobalData()
 {
+	// Setup color palettes
 	colorPaletteSetup();
+
+	// Load fonts
+	loadFonts();
 
 	// General
 	globals::developerMode = false;
