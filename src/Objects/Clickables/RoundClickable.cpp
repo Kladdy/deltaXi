@@ -5,11 +5,13 @@
 bool RoundClickable::isHovered()
 {
 	Logger::log("isHovered!");
+	return true;
 }
 
 bool RoundClickable::isClicked()
 {
 	Logger::log("isClicked!");
+	return true;
 }
 
 void RoundClickable::onHover()

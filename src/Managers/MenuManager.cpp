@@ -210,7 +210,6 @@ void MenuManager::startIntro()
 	animationClock.restart();
 	isAnimatingIntro = true;
 	globals::mainWindow.inst.setMouseCursorVisible(false);
-	Logger::log("Running animation");
 }
 
 void MenuManager::animateIntro()
@@ -284,7 +283,6 @@ void MenuManager::animateIntro()
 		}
 
 		globals::mainWindow.inst.setMouseCursorVisible(true); // Set cursor visible
-		Logger::log("Finished animation");
 	}
 }
 
@@ -521,7 +519,6 @@ void MenuManager::addMainMenuButton(std::string name)
 	storedSounds[key_sounds] = sf::Sound(loadedSoundBuffers[key_sounds]);
 
 	amountMenuButtons++;
-	Logger::log("Total: " + std::to_string(amountMenuButtons) + " menu buttons");
 }
 
 void MenuManager::addSimulations()
