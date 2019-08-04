@@ -29,6 +29,7 @@ class MenuButton : public RoundClickable
 		sf::Vector2f getPosition();
 		void setPosition(sf::Vector2f pos);
 		void setOutlineColor(sf::Color color);
+		void setFillColor(sf::Color color);
 		void setRadius(float radius);
 
 		MenuButton(std::string name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes = stringvector{"default"}, bool isActive = true);

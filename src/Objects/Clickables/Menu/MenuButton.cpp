@@ -64,6 +64,11 @@ void MenuButton::setOutlineColor(sf::Color color)
 	this->circleShape.setOutlineColor(color);
 }
 
+void MenuButton::setFillColor(sf::Color color)
+{
+	this->circleShape.setFillColor(color);
+}
+
 void MenuButton::setRadius(float radius)
 {
 	this->buttonRadius = radius;

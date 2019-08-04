@@ -8,6 +8,7 @@ private:
 
 public:
 	void updateAnimation(sf::Vector2f pos);
+	void setFade(int fade);
 
 	ParticleIconAnimation(int particleAmount);
 	ParticleIconAnimation();

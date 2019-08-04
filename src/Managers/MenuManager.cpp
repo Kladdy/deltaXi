@@ -248,6 +248,7 @@ void MenuManager::animateIntro()
 		sf::Color color = menuButtonOutlineColor;
 		color.a = (highFadeLimit - lowFadeLimit) * fadedFraction + lowFadeLimit;
 		menuButtons[key0].setOutlineColor(color);
+		particleIconAnimation.setFade(color.a);
 
 		// Move in the second menu botton from the right
 		std::string key1 = menuButtonMapKey(1);
@@ -263,6 +264,7 @@ void MenuManager::animateIntro()
 		isAnimatingFadeIn = true;
 		menuButtons[menuButtonMapKey(0)].setPosition(middlePoint);
 		menuButtons[menuButtonMapKey(0)].setOutlineColor(sf::Color::Transparent);
+		particleIconAnimation.setFade(0);
 
 		storedSounds["menuFade"].play(); // Play manu fade in sound
 
@@ -273,6 +275,8 @@ void MenuManager::animateIntro()
 	{
 		isAnimatingIntro = false;
 		isAnimatingFadeIn = false;
+
+		particleIconAnimation.setFade(255);
 
 		for (auto& [key, value]: menuButtons)
 		{
@@ -444,6 +448,15 @@ void MenuManager::animateTransition()
 		if (sign == +1) radius = (highRadiusLimit - lowRadiusLimit) * zoomFraction + lowRadiusLimit;
 		else if (sign == -1) radius = (lowRadiusLimit - highRadiusLimit) * zoomFraction + highRadiusLimit;
 		menuButtons[key].setRadius(radius);
+
+		switch (selectedSimulation){
+			case 0:
+				particleIconAnimation.setFade(sign * 255 * (0.5f + sign / 2.f - zoomFraction));
+				break;
+
+			default:
+				break;
+		}
 	}
 
 

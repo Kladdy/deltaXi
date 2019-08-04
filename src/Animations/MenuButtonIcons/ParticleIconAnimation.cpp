@@ -13,6 +13,7 @@ namespace
 	std::vector<float> angles;
 	std::vector<int> priorColors;
 	std::string colorPalette = "particles1";
+	int fadeComponent = 255;
 
 }
 
@@ -54,6 +55,7 @@ void ParticleIconAnimation::updateAnimation(sf::Vector2f pos)
 		movingParticleIndex = nextParticleIndex;
 
 		auto [ randomColor, colorIndex ] = globals::colorPalette.getRandomColorInPaletteExcludePrior(colorPalette, priorColors[nextParticleIndex]);
+		randomColor.a = fadeComponent;
 		particles[nextKey].circleShape.setFillColor(randomColor);
 		priorColors[nextParticleIndex] = colorIndex;
 
@@ -66,6 +68,18 @@ void ParticleIconAnimation::updateAnimation(sf::Vector2f pos)
 		std::string key = std::to_string(index);
 		particles[key].setPos(pos + sf::Vector2f(cos(angles[index]), sin(angles[index])) * rotationRadius);
 		globals::mainWindow.inst.draw(particles[key].circleShape);
+	}
+}
+
+void ParticleIconAnimation::setFade(int fade)
+{
+	fadeComponent = fade;
+	for (int index = 0; index < amountParticles; index++)
+	{
+		std::string key = std::to_string(index);
+		sf::Color color = particles[key].circleShape.getFillColor();
+		color.a = fade;
+		particles[key].circleShape.setFillColor(color);
 	}
 }
 
