@@ -12,6 +12,9 @@ class en_US
 
 			// Simulation names
 			s["sim_particles"] = L"Particles";
+			s["sim_doppler"] = L"Doppler";
+			s["sim_fluid"] = L"Fluids";
+			s["sim_relativity"] = L"Relativity";
 
 			return s;
 		}

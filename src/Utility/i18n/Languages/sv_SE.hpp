@@ -11,7 +11,10 @@ class sv_SE
 			s["updateLocale_success"] = L"Språket har ändrats till svenska.";
 
 			// Simulation names
-			s["sim_particles"] = L"PartiklarÅÄÖåäö";
+			s["sim_particles"] = L"Partiklar";
+			s["sim_doppler"] = L"Doppler";
+			s["sim_fluid"] = L"Fluider";
+			s["sim_relativity"] = L"Relativitet";
 
 			return s;
 		}
