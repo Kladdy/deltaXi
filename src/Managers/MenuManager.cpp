@@ -508,7 +508,7 @@ void MenuManager::animateTransitionInSimulation()
 	}
 }
 
-void MenuManager::addMainMenuButton(std::string name)
+void MenuManager::addMainMenuButton(std::wstring name)
 {
 	std::string key = menuButtonMapKey(amountMenuButtons); // Set current key to the amount of menu buttons (so that particles = 0 etc...)
 	std::string key_sounds = menuButtonSoundMapKey(amountMenuButtons);
@@ -525,7 +525,7 @@ void MenuManager::addSimulations()
 {
 	for (size_t i = 0; i < globals::simNames.size(); i++)
 	{
-		std::string simulationName = TextTools::getTranslation("sim_" + globals::simNames[i]);
+		std::wstring simulationName = TextTools::getTranslation("sim_" + globals::simNames[i]);
 		addMainMenuButton(simulationName);
 	}
 }
@@ -566,7 +566,7 @@ MenuManager::MenuManager()
 	(void)getTimer;
 
 	// Add transitioning menu button
-	transitionMenuButton = MenuButton("transition", menuButtonRadius, menuButtonPointCount, menuButtonFillColor, menuButtonHoldColor, menuButtonOutlineThickness, menuButtonHoldColor, -1);
+	transitionMenuButton = MenuButton(L"transition", menuButtonRadius, menuButtonPointCount, menuButtonFillColor, menuButtonHoldColor, menuButtonOutlineThickness, menuButtonHoldColor, -1);
 
 	if (globals::developerMode) // Developer animation durations to shorter launch
 	{

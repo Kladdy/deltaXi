@@ -4,10 +4,10 @@
 namespace
 {
 	std::string currentLocale;
-	std::map<std::string, std::string> localeStrings;
+	std::map<std::string, std::wstring> localeStrings;
 }
 
-void TranslationController::updateLocale(std::string locale, std::map<std::string, std::string> strings)
+void TranslationController::updateLocale(std::string locale, std::map<std::string, std::wstring> strings)
 {
 	currentLocale = locale;
 	localeStrings = strings;
@@ -15,14 +15,14 @@ void TranslationController::updateLocale(std::string locale, std::map<std::strin
 	Logger::log(localeStrings["updateLocale_success"]);
 }
 
-std::string TranslationController::translate(std::string key)
+std::wstring TranslationController::translate(std::string key)
 {
-	std::string string = localeStrings[key];
+	std::wstring string = localeStrings[key];
 
-	if (string == "")
+	if (string == L"")
 	{
 		Logger::log("Invalid key: " + key);
-		return "INVALID_KEY=" + key;
+		return L"INVALID_KEY=" + TextTools::stringTOwstring(key);
 	}
 
 	return string;

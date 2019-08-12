@@ -27,33 +27,34 @@ namespace
 		return (fontSize <= globals::minTextSize);
 	}
 
-	std::string wrapLimitedWidth(sf::Text* text, std::string string, int maxWidth)
+	std::wstring wrapLimitedWidth(sf::Text* text, std::wstring string, int maxWidth)
 	{
-		std::string temp = "";
-		std::string finalString = "";
-		std::vector<std::string> words;
+		std::wstring temp = L"";
+		std::wstring finalString = L"";
+		std::vector<std::wstring> words;
 
 		for (size_t i = 0; i < string.length(); i++)
 		{
 			if (string[i] == ' ')
 			{
 				words.push_back(temp);
-				temp = "";
+				temp = L"";
 			}
 			else if (string[i] == '-')
 			{
-				words.push_back(temp + "-");
-				temp = "";
+                temp.append(L"-");
+				words.push_back(temp);
+				temp = L"";
 			}
 			else if (string[i] == '\\' && string[i+1] == 'n')
 			{
 				words.push_back(temp);
-				temp = "";
+				temp = L"";
 			}
 			else
 			{
-				char c = string[i];
-				std::string s(1, c);
+				wchar_t c = string[i];
+				std::wstring s(1, c);
 				temp.append(s);
 
 				if (i == string.length() - 1) // If we have reached the last character
@@ -69,7 +70,7 @@ namespace
 
 		for (size_t j = 1; j < words.size(); j++)
 		{
-			if (words[j-1].find("\n") != std::string::npos) {
+			if (words[j-1].find(L"\n") != std::wstring::npos) {
 				temp = finalString + words[j];
 				text->setString(temp);
 
@@ -80,12 +81,12 @@ namespace
 			}
 			else
 			{
-				temp = finalString + " " + words[j];
+				temp = finalString + L" " + words[j];
 				text->setString(temp);
 
 				if (!widthIsInBounds(text, maxWidth))
 				{
-					finalString.append("\n" + words[j]);
+					finalString.append(L"\n" + words[j]);
 					text->setString(finalString);
 					if (!widthIsInBounds(text, maxWidth))
 						return string; // Could not wrap, still too big.
@@ -99,13 +100,25 @@ namespace
 	}
 }
 
-std::string TextTools::getTranslation(std::string stringLabel)
+std::string TextTools::wstringTOstring(std::wstring wstring)
+{
+    sf::String s(wstring);
+    return s.toAnsiString();
+}
+
+std::wstring TextTools::stringTOwstring(std::string string)
+{
+    sf::String s(string);
+    return s.toWideString();
+}
+
+std::wstring TextTools::getTranslation(std::string stringLabel)
 {
 	return globals::translation.translate(stringLabel);
 }
 
 // Creates a sf::Text with the given parameters
-sf::Text TextTools::createTextLabel(std::string string, sf::Vector2f position, int characterSize, std::string font, bool centerOrigin, sf::Color textColor, uint32_t textStyle)
+sf::Text TextTools::createTextLabel(std::wstring string, sf::Vector2f position, int characterSize, std::string font, bool centerOrigin, sf::Color textColor, uint32_t textStyle)
 {
 	sf::Text text;
 
@@ -126,7 +139,7 @@ sf::Text TextTools::createTranslatedTextLabel(std::string stringLabel, sf::Vecto
 {
 	sf::Text text;
 
-	std::string string = TextTools::getTranslation(stringLabel);
+	std::wstring string = TextTools::getTranslation(stringLabel);
 	text.setString(string);
 	text.setCharacterSize(characterSize);
 	text.setFont(globals::loadedFonts[font]);
@@ -144,10 +157,10 @@ sf::Text TextTools::createTranslatedTextLabel(std::string stringLabel, sf::Vecto
 // The same goes for the height. If either component is 0, that component will not be limited. If x is
 // limited, and the height has reached the limit, the function will decrease the font size and try again.
 // Any use of \n will be interpreted as a new line, and will immediately break.
-sf::Text TextTools::createTextLabel(std::string string, sf::Vector2f boundingBox, bool allowWrapping, sf::Vector2f position, int characterSize, std::string font, bool centerOrigin, sf::Color textColor, uint32_t textStyle)
+sf::Text TextTools::createTextLabel(std::wstring string, sf::Vector2f boundingBox, bool allowWrapping, sf::Vector2f position, int characterSize, std::string font, bool centerOrigin, sf::Color textColor, uint32_t textStyle)
 {
 	if (boundingBox == sf::Vector2f())
-		Logger::log("Bounding box is empty for label " + string + ", consider using an unbounded text box");
+		Logger::log("Bounding box is empty for the text box, consider using an unbounded text box");
 
 	sf::Text text;
 
@@ -169,7 +182,7 @@ sf::Text TextTools::createTextLabel(std::string string, sf::Vector2f boundingBox
 		{
 			if (allowWrapping) // Do wrapping (if allowed)
 			{
-				std::string temp = wrapLimitedWidth(&text, string, boundingBox.x);
+				std::wstring temp = wrapLimitedWidth(&text, string, boundingBox.x);
 				text.setString(temp);
 
 				if (!widthIsInBounds(&text, boundingBox.x))
@@ -195,7 +208,7 @@ sf::Text TextTools::createTextLabel(std::string string, sf::Vector2f boundingBox
 			characterSize--;
 			if (lowerFontSizeLimitReached(characterSize)) // Check if the character size is too small
 			{
-				Logger::log("Text size under threshold for text " + string);
+				Logger::log("Text size under threshold for text " + TextTools::wstringTOstring(string));
 				break;
 			}
 
@@ -208,7 +221,7 @@ sf::Text TextTools::createTextLabel(std::string string, sf::Vector2f boundingBox
 	}
 
 	if (!widthContained  || !heightContained)
-		Logger::log("Was not able to contain text '" + string + "'. Bounds: X=" + std::to_string(boundingBox.x) + " Y=" + std::to_string(boundingBox.y));
+		Logger::log("Was not able to contain text. Bounds: X=" + std::to_string(boundingBox.x) + " Y=" + std::to_string(boundingBox.y));
 
 	if (centerOrigin)
 		text.setOrigin(getCenter(&text));
@@ -229,7 +242,7 @@ sf::Text TextTools::createTranslatedTextLabel(std::string stringLabel, sf::Vecto
 
 	sf::Text text;
 
-	std::string string = TextTools::getTranslation(stringLabel);
+	std::wstring string = TextTools::getTranslation(stringLabel);
 	text.setString(string);
 	text.setCharacterSize(characterSize);
 	text.setFont(globals::loadedFonts[font]);
@@ -248,7 +261,7 @@ sf::Text TextTools::createTranslatedTextLabel(std::string stringLabel, sf::Vecto
 		{
 			if (allowWrapping) // Do wrapping (if allowed)
 			{
-				std::string temp = wrapLimitedWidth(&text, string, boundingBox.x);
+				std::wstring temp = wrapLimitedWidth(&text, string, boundingBox.x);
 				text.setString(temp);
 
 				if (!widthIsInBounds(&text, boundingBox.x))

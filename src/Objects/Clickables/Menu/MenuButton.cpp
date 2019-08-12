@@ -84,7 +84,7 @@ void MenuButton::setRadius(float radius)
 	this->circleShape.setOutlineThickness(this->outlineThicknessFraction * radius);
 }
 
-MenuButton::MenuButton(std::string name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes, bool isActive) : RoundClickable(enlistedScenes, isActive)
+MenuButton::MenuButton(std::wstring name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes, bool isActive) : RoundClickable(enlistedScenes, isActive)
 {
 	this->isActive = isActive;
 	this->enlistedScenes = enlistedScenes;

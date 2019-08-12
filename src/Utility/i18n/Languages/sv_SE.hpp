@@ -3,15 +3,15 @@
 class sv_SE
 {
 	public:
-		static std::map<std::string, std::string> strings()
+		static std::map<std::string, std::wstring> strings()
 		{
-			std::map<std::string, std::string> s;
+			std::map<std::string, std::wstring> s;
 
 			// Meta
-			s["updateLocale_success"] = "Språket har ändrats till svenska.";
+			s["updateLocale_success"] = L"Språket har ändrats till svenska.";
 
 			// Simulation names
-			s["sim_particles"] = "Partiklar";
+			s["sim_particles"] = L"PartiklarÅÄÖåäö";
 
 			return s;
 		}

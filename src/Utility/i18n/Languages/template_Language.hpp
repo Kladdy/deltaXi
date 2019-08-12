@@ -3,15 +3,15 @@
 class template_Language
 {
 	public:
-		static std::map<std::string, std::string> strings()
+		static std::map<std::string, std::wstring> strings()
 		{
-			std::map<std::string, std::string> s;
+			std::map<std::string, std::wstring> s;
 
 			// Meta
-			s["updateLocale_success"] = "updateLocale_success";
+			s["updateLocale_success"] = L"updateLocale_success";
 
 			// Simulation names
-			s["sim_particles"] = "sim_particles";
+			s["sim_particles"] = L"sim_particles";
 
 			return s;
 		}

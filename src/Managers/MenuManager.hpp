@@ -21,7 +21,7 @@ public:
 	void startTransitionInSimulation(TransitionDirection direction);
 	void animateTransitionInSimulation();
 
-	void addMainMenuButton(std::string name);
+	void addMainMenuButton(std::wstring name);
 	void addSimulations();
 	void resetMenu();
 

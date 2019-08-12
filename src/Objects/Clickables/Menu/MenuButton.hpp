@@ -8,7 +8,7 @@ class MenuButton : public RoundClickable
 {
 	private:
 		sf::Vector2f pos;
-		std::string name;
+		std::wstring name;
 		sf::CircleShape circleShape;
 		sf::Text label;
 
@@ -34,7 +34,7 @@ class MenuButton : public RoundClickable
 		void setFillColor(sf::Color color);
 		void setRadius(float radius);
 
-		MenuButton(std::string name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes = stringvector{"default"}, bool isActive = true);
+		MenuButton(std::wstring name, float radius, int pointCount, sf::Color fillColor, sf::Color outlineColor, float outlineThickness, sf::Color holdColor, int menuButtonIndex, stringvector enlistedScenes = stringvector{"default"}, bool isActive = true);
 		MenuButton();
 		~MenuButton();
 };

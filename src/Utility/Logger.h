@@ -13,6 +13,12 @@ class Logger
 			std::cout << sender + ": " + message << std::endl;
 		}
 
+		static void log(std::wstring message, std::string sender = "deltaXi")
+		{
+			std::cout << sender + ": ";
+			std::wcout << message << std::endl;
+		}
+
 		static void log(int data, std::string sender = "deltaXi")
 		{
 			std::cout << sender + ": " + std::to_string(data) << std::endl;

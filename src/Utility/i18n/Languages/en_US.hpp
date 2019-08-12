@@ -3,15 +3,15 @@
 class en_US
 {
 	public:
-		static std::map<std::string, std::string> strings()
+		static std::map<std::string, std::wstring> strings()
 		{
-			std::map<std::string, std::string> s;
+			std::map<std::string, std::wstring> s;
 
 			// Meta
-			s["updateLocale_success"] = "The language has been switched to English.";
+			s["updateLocale_success"] = L"The language has been switched to English.";
 
 			// Simulation names
-			s["sim_particles"] = "Particles";
+			s["sim_particles"] = L"Particles";
 
 			return s;
 		}
