@@ -10,6 +10,8 @@ class MenuButton : public RoundClickable
 		sf::Vector2f pos;
 		std::string name;
 		sf::CircleShape circleShape;
+		sf::Text label;
+
 	public:
 		int index;
 		float buttonRadius;

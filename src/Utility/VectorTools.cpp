@@ -12,7 +12,12 @@ vec2f VectorTools::vec2i_to_vec2f(vec2i vector)
 
 vec2i VectorTools::vec2f_to_vec2i(vec2f vector)
 {
-	return vec2i(vector.x, vector.y);
+	return vec2i(round(vector.x), round(vector.y));
+}
+
+sf::Vector2f VectorTools::roundVector2f(sf::Vector2f vector)
+{
+	return sf::Vector2f(round(vector.x), round(vector.y));
 }
 
 vec2f VectorTools::mirrorOverLine(vec2f vector, float gradient)

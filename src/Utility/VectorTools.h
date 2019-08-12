@@ -10,6 +10,7 @@ class VectorTools
 		static bool contains(stringvector vector, std::string stringToMatch);
 		static vec2f vec2i_to_vec2f(vec2i vector);
 		static vec2i vec2f_to_vec2i(vec2f vector);
+		static sf::Vector2f roundVector2f(sf::Vector2f vector);
 
 		// Mathematics
 		static vec2f mirrorOverLine(vec2f vector, float gradient);

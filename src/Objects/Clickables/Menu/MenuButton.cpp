@@ -44,6 +44,9 @@ void MenuButton::draw()
 {
 	if(this->isActive)
 	{
+		if (this->isHeld) // Only draw label if the button is held
+			globals::mainWindow.inst.draw(this->label);
+
 		globals::mainWindow.inst.draw(this->circleShape);
 	}
 }
@@ -57,6 +60,10 @@ void MenuButton::setPosition(sf::Vector2f pos)
 {
 	this->pos = pos;
 	this->circleShape.setPosition(pos);
+
+	pos.y += this->buttonRadius * 1.2f; // Change text position to specific fraction under
+	this->label.setPosition(pos);
+
 }
 
 void MenuButton::setOutlineColor(sf::Color color)
@@ -102,6 +109,8 @@ MenuButton::MenuButton(std::string name, float radius, int pointCount, sf::Color
 	this->holdColor = holdColor;
 
 	this->index = menuButtonIndex;
+
+	this->label = TextTools::createTextLabel(name, this->pos, globals::menuButtonTextSize, globals::defaultTextFont, true);
 }
 
 MenuButton::MenuButton() : RoundClickable(stringvector{"default"}, true)
