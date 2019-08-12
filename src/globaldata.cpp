@@ -7,6 +7,16 @@ namespace globals
 	bool developerMode;
 	ColorPalette colorPalette;
 
+	// i18n - localization (language)
+	std::string currentLocale;
+	TranslationController translation;
+
+	// Text
+    int defaultTextSize;
+	int minTextSize;
+	int menuButtonTextSize;
+	std::string defaultTextFont;
+
 	// Window
 	std::string windowTitle;
 	vec2i windowSize;

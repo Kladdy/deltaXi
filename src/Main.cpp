@@ -60,8 +60,16 @@ void initializeSimulations()
 	srand (time(NULL));
 	globals::currentState = globals::state::menu;
 
-	globals::simNames.push_back("Particles");
-	globals::simIsInitialized.push_back(false);
+	// Add simulation here to get a main menu icon
+	globals::simNames.push_back("particles");
+	globals::simNames.push_back("doppler");
+	globals::simNames.push_back("fluid");
+	globals::simNames.push_back("relativity");
+
+	for (size_t i = 0; i < globals::simNames.size(); i++)
+	{
+		globals::simIsInitialized.push_back(false);
+	}
 
 	globals::transitioningInSimulation = false;
 
@@ -76,7 +84,17 @@ void initializeGlobalData()
 	loadFonts();
 
 	// General
-	globals::developerMode = false;
+	globals::developerMode = true;
+
+	// i18n - localization (language)
+	globals::translation = TranslationController();
+	LanguageController::setLanguage("sv_SE");
+
+	// Text
+	globals::defaultTextSize = 14;
+	globals::minTextSize = 4;
+	globals::menuButtonTextSize = 20;
+	globals::defaultTextFont = "RomanSerif";
 
 	// Window
 	globals::windowTitle = "deltaXi";

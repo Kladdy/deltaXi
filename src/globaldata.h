@@ -3,12 +3,23 @@
 #define GLOBALDATA_H
 
 #include "./Utility/ColorPalette.hpp"
+#include "./Utility/i18n/TranslationController.hpp"
 
 namespace globals
 {
     // General
 	extern bool developerMode;
     extern ColorPalette colorPalette;
+
+    // i18n - localization (language)
+	extern std::string currentLocale;
+    extern TranslationController translation;
+
+    // Text
+    extern int defaultTextSize;
+    extern int minTextSize;
+    extern int menuButtonTextSize;
+    extern std::string defaultTextFont;
 
     // Window
     struct WindowStruct {

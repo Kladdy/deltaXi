@@ -523,10 +523,11 @@ void MenuManager::addMainMenuButton(std::string name)
 
 void MenuManager::addSimulations()
 {
-	addMainMenuButton("Particle");
-	addMainMenuButton("Doppler");
-	addMainMenuButton("Pendulum");
-	addMainMenuButton("Orbits");
+	for (size_t i = 0; i < globals::simNames.size(); i++)
+	{
+		std::string simulationName = TextTools::getTranslation("sim_" + globals::simNames[i]);
+		addMainMenuButton(simulationName);
+	}
 }
 
 void MenuManager::resetMenu()
