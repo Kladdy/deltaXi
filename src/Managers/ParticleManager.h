@@ -34,9 +34,12 @@ class ParticleManager
 
 		// Add functions
 		void addParticle(vec2f pos = vec2f(), vec2f velocity = vec2f());
+		void deleteParticle(int index);
+		void updateDeleteParticle();
 		void addWall(vec2f vertex1 = vec2f(10, 10), vec2f vertex2 = vec2f(100, 200), sf::Color color = SimulationConstants().ps_wallColor);
 		void addRectangleWall(vec2f topLeftCorner, vec2f bottomRightCorner, sf::Color color = SimulationConstants().ps_wallColor);
 		bool hasCollied(float initialDistance, float updatedDistance, float particleRadius);
+		void beginScaling(float scale);
 		void scaleWall();
 
 		std::tuple<sf::Vector2f, sf::Vector2f> ExtrapolatePositionsUponCollision(sf::Vector2f pos1, sf::Vector2f pos2, sf::Vector2f v1, sf::Vector2f v2, float totalRadius);

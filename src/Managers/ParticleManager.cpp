@@ -12,6 +12,19 @@ namespace
 	bool isAnimatingWallScaling = false;
 	sf::Vector2f particleBoxCenter;
 
+	// Particle removal animation
+	std::map<int, std::pair<float, Smootherstep>> deletionClockSmootherStep;
+	sf::Color deletedFillColor = sf::Color(204, 59, 59);
+
+	// Extract keys from map
+	template<typename TK, typename TV>
+	std::vector<TK> extract_keys(std::map<TK, TV> const& input_map) {
+		std::vector<TK> retval;
+		for (auto const& element : input_map) {
+			retval.push_back(element.first);
+		}
+		return retval;
+	}
 }
 
 
@@ -22,7 +35,8 @@ void ParticleManager::update()
 	if (isAnimatingWallScaling)
 		scaleWall();
 
-	updateKinematics();
+	if (!isAnimatingWallScaling) // Only update kinematics if we are not scaling the wall
+		updateKinematics();
 
 	for(size_t i = 0; i < this->particles.size(); i++)
 	{
@@ -73,6 +87,7 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 	if (key == sf::Keyboard::Num1 || key == sf::Keyboard::Num2 || key == sf::Keyboard::Num3 || key == sf::Keyboard::Num4)
 	{
 		float scale = 0.f;
+
 		switch (key){
 			case sf::Keyboard::Num1:
 				scale = 1 / 1.f;
@@ -94,14 +109,7 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 				scale = currentWallScale;
 		}
 
-		if (scale != currentWallScale && !isAnimatingWallScaling)
-		{
-			wallAnimationSmootherstep = Smootherstep(wallAnimationDuration, currentWallScale, scale);
-			wallAnimationSmootherstep.retartAnimation();
-			isAnimatingWallScaling = true;
-			wallAnimationScale = scale;
-		}
-
+		beginScaling(scale);
 	}
 
 	if (key == sf::Keyboard::A && control == true && alt == true && shift == true && system == true)
@@ -112,6 +120,9 @@ void ParticleManager::keyPressed(sf::Keyboard::Key key, bool control, bool alt, 
 
 void ParticleManager::addParticle(vec2f pos, vec2f velocity)
 {
+	if (isAnimatingWallScaling) // Disallow adding of particles if we are scaling the wall
+		return;
+
 	stringvector scenes { "default" };
 	sf::Color randomColor = globals::colorPalette.getRandomColorInPalette("particles1");
 	DrawableParticle drawableParticle = DrawableParticle(scenes, true, pos, SimulationConstants::ps_ParticleRadius, randomColor, 1.f);
@@ -121,10 +132,41 @@ void ParticleManager::addParticle(vec2f pos, vec2f velocity)
 	return;
 }
 
+void ParticleManager::deleteParticle(int index)
+{
+	// Check to see if particle is already being deleted
+	if (deletionClockSmootherStep.count(index) != 0)
+		return;
+
+	// Create smootherstep clock that lasts for the rest of the wall animation
+	float elapsedTime = wallAnimationSmootherstep.getElapsedTime();
+	std::pair<float, Smootherstep> deletionClock;
+	deletionClock.first = elapsedTime;
+	deletionClock.second = Smootherstep(wallAnimationDuration - elapsedTime, 255.f, 0.f);
+	deletionClockSmootherStep[index] = deletionClock;
+
+	// Set color of the particle to be deleted
+	particles[index].particle.circleShape.setFillColor(deletedFillColor);
+
+	if (index != -1)
+	{
+		//particles[index].particle.circleShape.setFillColor(sf::Color(50, 50, 50));
+	}
+}
+
+void ParticleManager::updateDeleteParticle()
+{
+	for (auto& [key, value] : deletionClockSmootherStep)
+	{
+		auto [ fade, animationIsComplete ] = value.second.getAnimationState();
+		sf::Color c = particles[key].particle.circleShape.getFillColor();
+		c.a = fade;
+		particles[key].particle.circleShape.setFillColor(c);
+	}
+}
+
 void ParticleManager::addWall(vec2f vertex1, vec2f vertex2, sf::Color color)
 {
-
-
 	if (vertex1 == vertex2) return Logger::logExtra("Both wall verticies are the same: terminated wall creation");
 
 	stringvector scenes { "default" };
@@ -134,7 +176,7 @@ void ParticleManager::addWall(vec2f vertex1, vec2f vertex2, sf::Color color)
 	return;
 }
 
- void ParticleManager::addRectangleWall(vec2f topLeftCorner, vec2f bottomRightCorner, sf::Color color)
+void ParticleManager::addRectangleWall(vec2f topLeftCorner, vec2f bottomRightCorner, sf::Color color)
 {
 	this->addWall(vec2f(topLeftCorner.x, topLeftCorner.y), vec2f(bottomRightCorner.x, topLeftCorner.y), color);
 	this->addWall(vec2f(bottomRightCorner.x, topLeftCorner.y), vec2f(bottomRightCorner.x, bottomRightCorner.y), color);
@@ -153,6 +195,17 @@ bool ParticleManager::hasCollied(float initialDistance, float updatedDistance, f
 	return (std::fabs(initialDistance) < particleRadius || std::fabs(updatedDistance) < particleRadius || !sameSign(initialDistance, updatedDistance));
 }
 
+void ParticleManager::beginScaling(float scale)
+{
+	if (scale != currentWallScale && !isAnimatingWallScaling)
+	{
+		wallAnimationSmootherstep = Smootherstep(wallAnimationDuration, currentWallScale, scale);
+		wallAnimationSmootherstep.retartAnimation();
+		isAnimatingWallScaling = true;
+		wallAnimationScale = scale;
+	}
+}
+
 void ParticleManager::scaleWall()
 {
 	auto [ scale, animationIsComplete ] = wallAnimationSmootherstep.getAnimationState();
@@ -160,14 +213,42 @@ void ParticleManager::scaleWall()
 	float x = particleBoxCenter.x;
 	float y = particleBoxCenter.y;
 
-	walls[0].updateWall(vec2f(x - vertexOffset, y - vertexOffset), vec2f(x + vertexOffset, y - vertexOffset));
-	walls[1].updateWall(vec2f(x + vertexOffset, y - vertexOffset), vec2f(x + vertexOffset, y + vertexOffset));
-	walls[2].updateWall(vec2f(x + vertexOffset, y + vertexOffset), vec2f(x - vertexOffset, y + vertexOffset));
-	walls[3].updateWall(vec2f(x - vertexOffset, y + vertexOffset), vec2f(x - vertexOffset, y - vertexOffset));
+	auto upperLeft = sf::Vector2f(x - vertexOffset, y - vertexOffset);
+	auto upperRight = sf::Vector2f(x + vertexOffset, y - vertexOffset);
+	auto lowerRight = sf::Vector2f(x + vertexOffset, y + vertexOffset);
+	auto lowerLeft = sf::Vector2f(x - vertexOffset, y + vertexOffset);
+
+	walls[0].updateWall(upperLeft, upperRight);
+	walls[1].updateWall(upperRight, lowerRight);
+	walls[2].updateWall(lowerRight, lowerLeft);
+	walls[3].updateWall(lowerLeft, upperLeft);
+
+	for (size_t i = 0; i < particles.size(); i++)
+	{
+		sf::Vector2f pos = particles[i].particle.getPos();
+		float maxOffset = vertexOffset - particles[i].particle.radius;
+
+		bool isBoundedInX = ( pos.x > x - maxOffset && pos.x < x + maxOffset );
+		bool isBoundedInY = ( pos.y > y - maxOffset && pos.y < y + maxOffset );
+		if (!isBoundedInX || !isBoundedInY)
+			deleteParticle(i);
+	}
+
+	updateDeleteParticle();
 
 	if (animationIsComplete){
 		isAnimatingWallScaling = false;
 		currentWallScale = wallAnimationScale;
+
+		auto keys = extract_keys(deletionClockSmootherStep);
+
+		// Remove all particles that have been faded out
+		for (int i = keys.size() - 1; i >= 0 ; i--)
+		{
+			particles.erase(particles.begin() + keys[i]);
+		}
+
+		deletionClockSmootherStep.clear();
 	}
 }
 
@@ -177,7 +258,6 @@ void ParticleManager::toggleGravity(bool gravityEnabled)
 		this->gravityEnabled = gravityEnabled;
 		for (size_t i = 0; i < this->particles.size(); i++)
 		{
-			Logger::log(std::to_string(i));
 			particles[i].particle.acceleration_offset = this->gravityVector;
 		}
 	}
