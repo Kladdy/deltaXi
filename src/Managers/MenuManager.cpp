@@ -44,7 +44,7 @@ namespace
 	// Intro: Button fading using Smooth(er)step by Ken Perlin (https://en.wikipedia.org/wiki/Smoothstep)
 	bool isAnimatingIntro = false;
 	bool isAnimatingFadeIn = false;
-	float introAnimationDuration = 8; // Intro duration (in seconds)
+	float introAnimationDuration = 6; // Intro duration (in seconds)
 	float introAnimationFadeinDuration = 5;
 	// Flying - Initialized in constructor
 	float lowXLimit;
@@ -63,8 +63,8 @@ namespace
 	float highXLeftLimit;
 	// Transition animation
 	bool isAnimatingTransition = false;
-	float transitionAnimationDuration = 2; // Transition duration (in seconds)
-	float delayUntilTransition = 1;
+	float transitionAnimationDuration = 1.5f; // Transition duration (in seconds)
+	float delayUntilTransition = 0.5f;
 	MenuManager::TransitionDirection transitionDirection;
 	float lowRadiusLimit;
 	float highRadiusLimit;
