@@ -15,8 +15,9 @@ private:
 public:
 	void retartAnimation(bool forward = true);
 	std::tuple<float, bool> getAnimationState();
+	float getElapsedTime();
 
-	Smootherstep(float animationDuration, float lowerValue = 0.f, float upperValue = 0.f);
+	Smootherstep(float animationDuration, float lowerValue = 0.f, float upperValue = 1.f);
 	Smootherstep();
 	~Smootherstep();
 };

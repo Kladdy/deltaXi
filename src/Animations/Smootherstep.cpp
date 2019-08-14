@@ -34,6 +34,11 @@ std::tuple<float, bool> Smootherstep::getAnimationState()
 	return std::make_tuple(stateScaled, (elapsedTime >= this->animationDuration)); // Set tuple object 2 to true if animation is done
 }
 
+float Smootherstep::getElapsedTime()
+{
+	return this->animationClock.getElapsedTime().asSeconds();
+}
+
 Smootherstep::Smootherstep(float animationDuration, float lowerValue, float upperValue)
 {
 	this->animationDuration = animationDuration;
