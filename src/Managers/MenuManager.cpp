@@ -581,7 +581,9 @@ MenuManager::MenuManager()
 
 	addSimulations();
 
-	startIntro();
+	// Play intro if current state is menu
+	if (globals::currentState == globals::state::menu)
+		startIntro();
 }
 
 MenuManager::~MenuManager()
