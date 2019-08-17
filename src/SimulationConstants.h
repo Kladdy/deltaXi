@@ -7,6 +7,28 @@
 class SimulationConstants
 {
 	public:
+		// -----
+		// Dials
+		// -----
+
+		// Slider
+		static const int dials_SliderRoundedRectanglePointCount = 30;
+		static const int dials_SliderRoundedRectangleRadius = 8.f;
+		static const int dials_SliderRoundedRectangleOutlineThickness = -2;
+		const sf::Color dials_SliderRoundedRectangleOutlineColor = sf::Color::White;
+		const sf::Color dials_SliderFillColor = sf::Color::White;
+		const sf::Color dials_SliderSmallFillColor = sf::Color::White;
+		static const int dials_SliderSmallRadius = 2;
+		static const int dials_SliderSmallPointCount = 15;
+		static const int dials_SliderSelectionRadius = 12;
+		static const int dials_SliderSelectionPointCount = 30;
+		const sf::Color dials_SliderSelectionFillColor = sf::Color::Black;
+		const sf::Color dials_SliderSelectionOutlineColor = sf::Color::White;
+		static const int dials_SliderSelectionOutlineThickness = -2;
+		static const auto dials_SliderSelectionAnimationDuration = 300; // Animation duration in milliseconds
+
+
+
 		// ------------------
 		// Particle simulator
 		// ------------------
