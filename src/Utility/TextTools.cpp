@@ -293,6 +293,7 @@ sf::Text TextTools::createTranslatedTextLabel(std::string stringLabel, sf::Vecto
 
 			text.setCharacterSize(characterSize);
 			doDecreaseFontSize = false;
+            text.setString(string);
 		}
 
 		widthContained = widthIsInBounds(&text, boundingBox.x);
