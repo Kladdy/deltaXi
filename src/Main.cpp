@@ -92,7 +92,7 @@ void initializeGlobalData()
 	loadFonts();
 
 	// General
-	globals::developerMode = true;
+	globals::developerMode = false;
 
 	// i18n - localization (language)
 	globals::translation = TranslationController();
