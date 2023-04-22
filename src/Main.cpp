@@ -47,7 +47,10 @@ void colorPaletteSetup()
 
 	globals::colorPalette.addColorPalette("RGB", std::vector<sf::Color>{sf::Color::Red, sf::Color::Green, sf::Color::Blue});
 	globals::colorPalette.addColorPalette("particles1", std::vector<sf::Color>{sf::Color(70, 188, 222), sf::Color(82, 210, 115), sf::Color(233, 79, 100), sf::Color(229, 114, 84), sf::Color(229, 196, 84)});
-
+	globals::colorPalette.addColorPalette("particles2", std::vector<sf::Color>{sf::Color(40, 40, 40), sf::Color(80, 80, 80), sf::Color(125, 125, 125), sf::Color(165, 165, 165), sf::Color(210, 210, 210), sf::Color(255, 255, 255)});
+	globals::colorPalette.addColorPalette("particles3", std::vector<sf::Color>{sf::Color(214, 187, 192), sf::Color(208, 163, 191), sf::Color(197, 133, 179), sf::Color(188, 105, 170), sf::Color(175, 66, 174)});
+	globals::colorPalette.addColorPalette("particles4", std::vector<sf::Color>{sf::Color(52, 0, 104), sf::Color(255, 105, 120), sf::Color(255, 252, 249), sf::Color(177, 237, 232), sf::Color(109, 67, 90)});
+	globals::colorPalette.addColorPalette("particles5", std::vector<sf::Color>{sf::Color(244, 228, 9), sf::Color(238, 186, 11), sf::Color(195, 111, 9), sf::Color(166, 60, 6), sf::Color(113, 0, 0)});
 }
 
 void loadFonts()
@@ -64,6 +67,11 @@ void initializeSimulations()
 	globals::simNames.push_back("particles");
 	globals::simNames.push_back("doppler");
 	globals::simNames.push_back("fluid");
+	globals::simNames.push_back("relativity");
+	globals::simNames.push_back("relativity");
+	globals::simNames.push_back("relativity");
+	globals::simNames.push_back("relativity");
+	globals::simNames.push_back("relativity");
 	globals::simNames.push_back("relativity");
 
 	for (size_t i = 0; i < globals::simNames.size(); i++)
@@ -88,10 +96,10 @@ void initializeGlobalData()
 
 	// i18n - localization (language)
 	globals::translation = TranslationController();
-	LanguageController::setLanguage("sv_SE");
+	LanguageController::setLanguage("en_US");
 
 	// Text
-	globals::defaultTextSize = 14;
+	globals::defaultTextSize = 16;
 	globals::minTextSize = 4;
 	globals::menuButtonTextSize = 20;
 	globals::defaultTextFont = "RomanSerif";

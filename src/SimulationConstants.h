@@ -26,6 +26,7 @@ class SimulationConstants
 		const sf::Color dials_SliderSelectionOutlineColor = sf::Color::White;
 		static const int dials_SliderSelectionOutlineThickness = -2;
 		static const auto dials_SliderSelectionAnimationDuration = 300; // Animation duration in milliseconds
+		const sf::Color dials_SliderKnobHoldColor = sf::Color(99, 124, 135);
 
 
 
@@ -39,6 +40,8 @@ class SimulationConstants
 		static const int ps_circlePointCount = 30;
 		static const int ps_maxRandomVelocity = 1000.f;
 		static const int ps_extrapolationPrecision = 10;
+		static const int ps_particleColorVariations = 5;
+		static const int ps_particleContainerSizeVariations = 4;
 
 		// Wall
 		const sf::Color ps_wallColor = sf::Color::White;

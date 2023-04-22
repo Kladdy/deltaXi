@@ -40,13 +40,21 @@ class ParticleManager
 		void addRectangleWall(vec2f topLeftCorner, vec2f bottomRightCorner, sf::Color color = SimulationConstants().ps_wallColor);
 		bool hasCollied(float initialDistance, float updatedDistance, float particleRadius);
 		void beginScaling(float scale);
+		void beginStateFadeBoxAnimation(std::string state);
 		void scaleWall();
+		void updateStateFadeBox();
 
 		std::tuple<sf::Vector2f, sf::Vector2f> ExtrapolatePositionsUponCollision(sf::Vector2f pos1, sf::Vector2f pos2, sf::Vector2f v1, sf::Vector2f v2, float totalRadius);
 		std::tuple<sf::Vector2f, sf::Vector2f, sf::Vector2f, sf::Vector2f> ParticleOnParticleCollision(Particle p1, Particle p2);
 
+		void setParticleColor(int colorPaletteId);
+		void textSetup();
+		void dialsSetup();
+		void statePickerSetup();
+		void statsSetup();
 		void toggleGravity(bool gravityEnabled);
 		void updateKinematics();
+		void updateStats();
 
 	public:
 		void update();

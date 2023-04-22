@@ -22,6 +22,7 @@ class Particle
 		vec2f getVelocity();
 		void setVelocity(vec2f velocity);
 		float getMass();
+		void setColor(sf::Color color);
 
 		Particle(vec2f pos = vec2f(0.f,0.f), int radius = SimulationConstants::ps_ParticleRadius, sf::Color color = SimulationConstants().ps_ParticleColor, float elasticityModule = 0.8f);
 };

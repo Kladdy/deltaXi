@@ -28,7 +28,7 @@ void ParticleIconAnimation::addParticle(int index)
 	auto [ randomColor, colorIndex ] = globals::colorPalette.getRandomColorInPaletteExcludePrior(colorPalette, -1);
 
 	sf::Vector2f pos = sf::Vector2f(cos(angle), sin(angle)) * rotationRadius;
-	Particle p = Particle(pos, SimulationConstants::ps_ParticleRadius, randomColor, 1.f);
+	Particle p = Particle(pos, SimulationConstants::ps_ParticleRadius, randomColor, 0.8f);
 	particles[key] = p;
 
 	angles.push_back(angle);

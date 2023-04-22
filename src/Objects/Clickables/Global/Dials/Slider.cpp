@@ -15,6 +15,133 @@ namespace
 
 		return positions;
 	}
+
+	template<typename Q, typename I, typename Distance>
+	void find_n_nearest(const Q& q, I first, I nth, I last, Distance dist)
+	{
+		using T = decltype(*first);
+		auto compare = [&q, &dist] (T i, T j) { return dist(i, q) < dist(j, q); };
+		std::nth_element(first, nth, last, compare);
+		std::sort(first, last, compare);
+	}
+
+	template < typename T>
+	std::pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & element)
+	{
+		std::pair<bool, int > result;
+
+		// Find given element in vector
+		auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
+
+		if (it != vecOfElements.end())
+		{
+			result.second = distance(vecOfElements.begin(), it);
+			result.first = true;
+		}
+		else
+		{
+			result.first = false;
+			result.second = -1;
+		}
+
+		return result;
+	}
+
+	float clamp(float x, float lowerlimit, float upperlimit) {
+		if (x < lowerlimit)
+			x = lowerlimit;
+		else if (x > upperlimit)
+			x = upperlimit;
+		return x;
+	}
+
+	bool isCointainedInRectangle(sf::Vector2f pos, sf::Vector2f topLeft, sf::Vector2f bottomRight)
+	{
+		bool isBoundedInX = (pos.x > topLeft.x && pos.x < bottomRight.x);
+		bool isBoundedInY = (pos.y > topLeft.y && pos.y < bottomRight.y);
+
+		return (isBoundedInX && isBoundedInY);
+	}
+}
+
+bool Slider::isHovered()
+{
+	auto topLeft = this->position;
+	auto bottomRight = topLeft;
+	bottomRight.x += roundedRectangle.getLocalBounds().width;
+	bottomRight.y += roundedRectangle.getLocalBounds().height;
+
+	auto mouseIsBounded = isCointainedInRectangle(VectorTools::vec2i_to_vec2f(globals::mousePos), topLeft, bottomRight);
+
+	if (Toolbox::isHoverable() && isActive && !isHeld && mouseIsBounded)
+	{
+		this->onHover();
+		return true;
+	}
+	else if (Toolbox::isHoverable() && isActive && isHeld && mouseIsBounded)
+	{
+
+		return true;
+	}
+	else if ((isActive && !mouseIsBounded) || !Toolbox::isHoverable())
+	{
+		this->onDeHover();
+		return false;
+	}
+
+	return false;
+}
+/*
+bool Slider::knobIsHovered()
+{
+	float radius = SimulationConstants::dials_SliderSelectionRadius;
+	float dist = VectorTools::distancePointToPoint(knobPosition, globals::mousePos);
+
+	if (Toolbox::isHoverable() && this->isActive && !this->knobIsHeld && dist <= radius)
+	{
+		this->onKnobHover();
+		return true;
+	}
+	else if (Toolbox::isHoverable() && this->isActive && this->knobIsHeld && dist <= radius)
+	{
+		//setStateFromXValue();
+		return true;
+	}
+	else if ((this->isActive && dist >= radius) || !Toolbox::isHoverable())
+	{
+		this->onKnobDeHover();
+		return false;
+	}
+
+	return false;
+}
+
+void Slider::onKnobHover()
+{
+	selectionCircleShape.setOutlineColor(SimulationConstants().dials_SliderKnobHoldColor);
+	this->knobIsHeld = true;
+}
+
+void Slider::onKnobDeHover()
+{
+	selectionCircleShape.setOutlineColor(sf::Color::White);
+	this->knobIsHeld = false;
+}
+*/
+void Slider::onHover()
+{
+	this->isHeld = true;
+}
+
+void Slider::onDeHover()
+{
+	this->isHeld = false;
+}
+
+
+void Slider::onClick()
+{
+	setStateFromXValue(globals::mousePos.x);
 }
 
 void Slider::draw()
@@ -39,6 +166,7 @@ void Slider::updateSelection()
 	auto pos = selectionCircleShape.getPosition();
 	pos.x = Xpos;
 
+	this->knobPosition = pos;
 	selectionCircleShape.setPosition(pos);
 
 	if (animationIsComplete)
@@ -51,6 +179,11 @@ void Slider::updateSelection()
 int Slider::getState()
 {
 	return selectedState;
+}
+
+int Slider::getStateToBeSelected()
+{
+	return stateToBeSelected;
 }
 
 void Slider::setState(int state)
@@ -68,10 +201,31 @@ void Slider::setState(int state)
 	smootherStepAnimation = Smootherstep(SimulationConstants::dials_SliderSelectionAnimationDuration / 1000.f, position.x + smallPointXValues[selectedState], position.x + smallPointXValues[stateToBeSelected]);
 }
 
-Slider::Slider(int amountStates, float length, sf::Vector2f pos, stringvector enlistedScenes, bool isActive) : BaseClickable(enlistedScenes, isActive)
+void Slider::setStateFromXValue(float x)
+{
+	auto roundRectangleRadius =  SimulationConstants::dials_SliderRoundedRectangleRadius;
+	x = clamp(x, position.x + roundRectangleRadius, position.x + sliderLength - roundRectangleRadius) - position.x; // Clamp and "normalize"
+
+	auto smallPointXValues = smallPointPositions(stateAmount, sliderLength);
+
+	auto distance = [] (float i, float j) { return std::abs(i-j); };
+
+    find_n_nearest(x, smallPointXValues.begin(), smallPointXValues.begin() + smallPointXValues.size(), smallPointXValues.end(), distance);
+	float nearest = smallPointXValues[0];
+
+	// Redo the calculations in order to get the correct arrangement
+	smallPointXValues = smallPointPositions(stateAmount, sliderLength);
+
+	auto state = findInVector<float>(smallPointXValues, nearest);
+
+	this->setState(state.second);
+}
+
+Slider::Slider(int amountStates, float length, sf::Vector2f pos, int initialState, stringvector enlistedScenes, bool isActive) : BaseClickable(enlistedScenes, isActive)
 {
 	auto roundedRectangleRadius = SimulationConstants::dials_SliderRoundedRectangleRadius;
 	auto size = sf::Vector2f(length, roundedRectangleRadius * 2);
+	selectedState = initialState;
 
 	roundedRectangle = RoundedRectangleShape(size, roundedRectangleRadius, SimulationConstants::dials_SliderRoundedRectanglePointCount);
 
@@ -101,11 +255,14 @@ Slider::Slider(int amountStates, float length, sf::Vector2f pos, stringvector en
 	selectionCircleShape.setOutlineColor(SimulationConstants().dials_SliderSelectionOutlineColor);
 	selectionCircleShape.setOutlineThickness(SimulationConstants::dials_SliderSelectionOutlineThickness);
 	selectionCircleShape.setOrigin(sf::Vector2f(selectionCircleRadius, selectionCircleRadius));
-	selectionCircleShape.setPosition(sf::Vector2f(pos.x + smallPointXValues[selectedState], pos.y + roundedRectangleRadius));
+	knobPosition = sf::Vector2f(pos.x + smallPointXValues[selectedState], pos.y + roundedRectangleRadius);
+	selectionCircleShape.setPosition(knobPosition);
 
 	position = pos;
 	sliderLength = length;
-
+	this->knobIsHeld = false;
+	this->isActive = true;
+	this->isHeld = true;
 }
 
 Slider::Slider() : BaseClickable(stringvector{"default"}, true)
